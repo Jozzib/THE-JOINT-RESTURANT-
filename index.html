@@ -218,8 +218,11 @@
 
     // INITIALIZE SUPABASE CLIENT PROPERLY
     let supabase = null;
-    if (window.supabase && SUPABASE_ANON_KEY) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    function initSupabase() {
+      if (!supabase && window.supabase && SUPABASE_ANON_KEY) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      return supabase;
     }
 
     let allMenuItems = [];
@@ -231,22 +234,23 @@
 
     async function loadMenu() {
       const grid = document.getElementById('menu-grid');
+      const client = initSupabase();
       
       // KEY CHECK FAILSAFE
-      if (!supabase) {
+      if (!client) {
         grid.innerHTML = `
           <div class="col-span-full text-center py-12 bg-amber-50 border border-amber-200 text-amber-900 rounded-3xl p-6">
             <i class="fa-solid fa-key text-3xl text-amber-500 mb-2"></i>
             <p class="font-bold text-base">Supabase Initialization Failed</p>
             <p class="text-xs text-amber-700 mt-1 max-w-md mx-auto">
-              Please ensure the Supabase library is loaded correctly.
+              Please ensure the Supabase JS script loaded correctly.
             </p>
           </div>`;
         return;
       }
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await client
           .from('menu_items')
           .select('*')
           .order('id', { ascending: false });
@@ -278,7 +282,8 @@
 
     function renderMenu() {
       const grid = document.getElementById('menu-grid');
-      const searchQuery = document.getElementById('search-input').value.toLowerCase();
+      const searchInput = document.getElementById('search-input');
+      const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
 
       const itemsToDisplay = allMenuItems.filter(item => {
         const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
@@ -397,7 +402,10 @@
       document.getElementById('modal-calculated-total').innerText = `₦${total.toLocaleString()}`;
     }
 
-    document.getElementById('swallow-type').addEventListener('change', recalculateModalPrice);
+    const swallowTypeElem = document.getElementById('swallow-type');
+    if (swallowTypeElem) {
+      swallowTypeElem.addEventListener('change', recalculateModalPrice);
+    }
 
     function confirmAddToCart() {
       if (!selectedItem) return;
@@ -540,8 +548,12 @@
       }
     }
 
-    // LOAD MENU ON DOM LOAD
-    document.addEventListener('DOMContentLoaded', loadMenu);
+    // ENSURE MENU LOADS NO MATTER WHAT
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadMenu);
+    } else {
+      loadMenu();
+    }
   </script>
 </body>
 </html>
