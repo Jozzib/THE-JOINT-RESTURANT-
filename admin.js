@@ -1,14 +1,169 @@
-const defaultImage = 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=80';
-const money = n => new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(n);
-let menu = JSON.parse(localStorage.getItem('joint-menu') || 'null');
+const defaultImage =
+  "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=80";
+
+const money = (amount) =>
+  new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 0,
+  }).format(amount);
+
+let menu = JSON.parse(localStorage.getItem("joint-menu") || "null");
+
 if (!menu) {
   menu = [
-    ['Jollof Rice & Chicken','Rice',4200,'Smoky jollof rice served with grilled chicken and plantain.'],['Pounded Yam & Egusi','Swallow',3800,'Smooth pounded yam with rich egusi soup and assorted meat.'],['Ofada Rice Special','Rice',4500,'Local rice with our signature ayamase sauce and protein.'],['Peppered Goat Meat','Small Chops',3500,'Tender goat meat tossed in a bold, spicy pepper sauce.'],['Fried Plantain & Eggs','Breakfast',2800,'Sweet fried plantain with fluffy scrambled eggs.'],['Suya Chicken Wrap','Quick Bites',3200,'Spiced chicken, fresh vegetables and creamy sauce in a wrap.'],['Zobo & Pineapple','Drinks',1200,'A chilled, refreshing house-made zobo blend.'],['Meat Pie','Quick Bites',1000,'Flaky pastry filled with seasoned minced beef and vegetables.']
-  ].map((item, index) => ({ id:index + 1, name:item[0], category:item[1], price:item[2], description:item[3], image:defaultImage }));
-  localStorage.setItem('joint-menu', JSON.stringify(menu));
+    [
+      "Jollof Rice & Chicken",
+      "Rice",
+      4200,
+      "Smoky jollof rice served with grilled chicken and plantain.",
+    ],
+    [
+      "Pounded Yam & Egusi",
+      "Swallow",
+      3800,
+      "Smooth pounded yam with rich egusi soup and assorted meat.",
+    ],
+    [
+      "Ofada Rice Special",
+      "Rice",
+      4500,
+      "Local rice with our signature ayamase sauce and protein.",
+    ],
+    [
+      "Peppered Goat Meat",
+      "Small Chops",
+      3500,
+      "Tender goat meat tossed in a bold, spicy pepper sauce.",
+    ],
+    [
+      "Fried Plantain & Eggs",
+      "Breakfast",
+      2800,
+      "Sweet fried plantain with fluffy scrambled eggs.",
+    ],
+    [
+      "Suya Chicken Wrap",
+      "Quick Bites",
+      3200,
+      "Spiced chicken, fresh vegetables and creamy sauce in a wrap.",
+    ],
+    [
+      "Zobo & Pineapple",
+      "Drinks",
+      1200,
+      "A chilled, refreshing house-made zobo blend.",
+    ],
+    [
+      "Meat Pie",
+      "Quick Bites",
+      1000,
+      "Flaky pastry filled with seasoned minced beef and vegetables.",
+    ],
+  ].map((item, index) => ({
+    id: index + 1,
+    name: item[0],
+    category: item[1],
+    price: item[2],
+    description: item[3],
+    image: defaultImage,
+  }));
+
+  localStorage.setItem("joint-menu", JSON.stringify(menu));
 }
-function renderMenu() { document.querySelector('#menuList').innerHTML = menu.length ? menu.map(item => `<div class="manage-item"><div><h3>${item.name}</h3><p>${item.category} · ${money(item.price)}</p></div><button class="delete" data-id="${item.id}">Remove</button></div>`).join('') : '<p class="empty-admin">Your original menu appears on the customer site until you add or remove an item here.</p>'; }
-function renderOrders() { const orders = JSON.parse(localStorage.getItem('joint-orders') || '[]'); document.querySelector('#ordersList').innerHTML = orders.length ? orders.map(order => `<article class="order"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start"><div><h3>${order.id} · ${order.customer.name}</h3><p>${order.customer.phone} · ${order.customer.address}</p></div><span class="badge">${order.customer.payment}</span></div><ul class="order-items">${order.items.map(item => `<li>${item.quantity} × ${item.name} — ${money(item.price * item.quantity)}</li>`).join('')}</ul><strong>${money(order.total)}</strong></article>`).join('') : '<p class="empty-admin">No orders have been placed yet.</p>'; }
-document.querySelector('#menuForm').addEventListener('submit', event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.target)); menu.push({ id: Date.now(), name:data.name, category:data.category, price:Number(data.price), description:data.description, image:data.image || defaultImage }); localStorage.setItem('joint-menu', JSON.stringify(menu)); event.target.reset(); renderMenu(); });
-document.querySelector('#menuList').addEventListener('click', event => { const id = Number(event.target.dataset.id); if (!id) return; menu = menu.filter(item => item.id !== id); localStorage.setItem('joint-menu', JSON.stringify(menu)); renderMenu(); });
-renderMenu();renderOrders();
+
+function renderMenu() {
+  const menuList = document.querySelector("#menuList");
+
+  menuList.innerHTML = menu.length
+    ? menu
+        .map(
+          (item) => `
+            <div class="manage-item">
+              <div>
+                <h3>${item.name}</h3>
+                <p>${item.category} · ${money(item.price)}</p>
+              </div>
+
+              <button class="delete" data-id="${item.id}">Remove</button>
+            </div>
+          `
+        )
+        .join("")
+    : `<p class="empty-admin">There are no food items yet.</p>`;
+}
+
+function renderOrders() {
+  const orders = JSON.parse(localStorage.getItem("joint-orders") || "[]");
+  const ordersList = document.querySelector("#ordersList");
+
+  ordersList.innerHTML = orders.length
+    ? orders
+        .map(
+          (order) => `
+            <article class="order">
+              <div style="display: flex; justify-content: space-between; gap: 12px; align-items: start">
+                <div>
+                  <h3>${order.id} · ${order.customer.name}</h3>
+                  <p>
+                    ${order.customer.phone} · ${order.customer.address}
+                  </p>
+                </div>
+
+                <span class="badge">${order.customer.payment}</span>
+              </div>
+
+              <ul class="order-items">
+                ${order.items
+                  .map(
+                    (item) => `
+                      <li>
+                        ${item.quantity} × ${item.name} —
+                        ${money(item.price * item.quantity)}
+                      </li>
+                    `
+                  )
+                  .join("")}
+              </ul>
+
+              <strong>${money(order.total)}</strong>
+            </article>
+          `
+        )
+        .join("")
+    : `<p class="empty-admin">No orders have been placed yet.</p>`;
+}
+
+document.querySelector("#menuForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const data = Object.fromEntries(new FormData(event.target));
+
+  menu.push({
+    id: Date.now(),
+    name: data.name,
+    category: data.category,
+    price: Number(data.price),
+    description: data.description,
+    image: data.image || defaultImage,
+  });
+
+  localStorage.setItem("joint-menu", JSON.stringify(menu));
+
+  event.target.reset();
+  renderMenu();
+});
+
+document.querySelector("#menuList").addEventListener("click", (event) => {
+  const id = Number(event.target.dataset.id);
+
+  if (!id) return;
+
+  menu = menu.filter((item) => item.id !== id);
+
+  localStorage.setItem("joint-menu", JSON.stringify(menu));
+  renderMenu();
+});
+
+renderMenu();
+renderOrders();
