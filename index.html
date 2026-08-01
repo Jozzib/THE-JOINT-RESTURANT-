@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bistro Restaurant - Order Online</title>
+  <title>The Joint - Fresh Food & Drinks Delivered</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -19,104 +19,142 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
-  <!-- TOP HEADER / NAVBAR -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-white/90 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
       
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-indigo-200">
-          <i class="fa-solid fa-utensils"></i>
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-orange-500/30 group-hover:scale-105 transition">
+          <i class="fa-solid fa-fire-flame-curved"></i>
         </div>
         <div>
-          <span class="text-xl font-extrabold text-slate-900 tracking-tight">The Joint</span>
-          <span class="block text-[11px] font-semibold text-emerald-600">● Open for orders</span>
+          <span class="text-xl font-black text-slate-900 tracking-tight block leading-tight">The Joint</span>
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Open for orders
+          </span>
         </div>
-      </div>
+      </a>
 
-      <!-- CART TRIGGER BUTTON -->
-      <button onclick="toggleCart(true)" class="relative bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2.5">
-        <i class="fa-solid fa-bag-shopping text-indigo-400"></i>
-        <span>My Order</span>
-        <span id="cart-badge" class="bg-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
-      </button>
+      <!-- Quick Nav Links + Cart -->
+      <div class="flex items-center gap-4">
+        <a href="./admin.html" class="hidden sm:inline-flex text-xs font-bold text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg transition">Admin</a>
+        <a href="./manager.html" class="hidden sm:inline-flex text-xs font-bold text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg transition">Kitchen</a>
+
+        <button onclick="toggleCart(true)" class="relative bg-slate-900 hover:bg-orange-600 text-white px-5 py-2.5 rounded-2xl font-bold text-xs shadow-lg shadow-slate-900/10 hover:shadow-orange-500/20 transition flex items-center gap-2.5 group">
+          <i class="fa-solid fa-bag-shopping text-orange-400 group-hover:text-white transition"></i>
+          <span>My Order</span>
+          <span id="cart-badge" class="bg-orange-500 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full min-w-[20px] text-center">0</span>
+        </button>
+      </div>
 
     </div>
   </header>
 
-  <!-- HERO BANNER -->
-  <section class="bg-slate-900 text-white py-12 px-4 sm:px-6 relative overflow-hidden">
-    <div class="max-w-7xl mx-auto relative z-10 text-center sm:text-left">
-      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-3">Delicious Food,<br class="hidden sm:inline" /> Delivered To Your Table.</h1>
-      <p class="text-slate-400 max-w-xl text-sm sm:text-base">Freshly prepared local dishes and refreshing drinks. Choose your favorites and check out online in seconds.</p>
+  <!-- HERO BANNER WITH BACKGROUND IMAGE OVERLAY -->
+  <section class="relative bg-slate-900 text-white py-16 sm:py-24 px-4 sm:px-6 overflow-hidden">
+    <!-- Background Image with Dark Gradient -->
+    <div class="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
+      <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=80" alt="Restaurant hero background" class="w-full h-full object-cover" />
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent z-0"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="max-w-2xl text-center md:text-left">
+        <span class="inline-block px-3.5 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-extrabold uppercase tracking-wider mb-4">
+          🔥 Freshly Made Daily
+        </span>
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4">
+          Craving Something <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">Delicious?</span>
+        </h1>
+        <p class="text-slate-300 text-sm sm:text-base max-w-lg mb-8 leading-relaxed">
+          Order authentic local dishes and cold drinks online. Fast preparation, seamless Paystack checkout, and hot food delivered right to you.
+        </p>
+
+        <!-- Feature Highlights Bar -->
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-6 text-xs text-slate-300 font-semibold">
+          <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-orange-400"></i> 20-30 Mins Prep</div>
+          <div class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-emerald-400"></i> Paystack Secured</div>
+          <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-amber-400"></i> Fresh Ingredients</div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- MAIN MENU SECTION -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+  <!-- MENU EXPLORER SECTION -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-10">
     
-    <!-- CATEGORY FILTER TABS & SEARCH -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-between items-center mb-8">
-      <div class="flex gap-2 w-full sm:w-auto bg-slate-200/70 p-1.5 rounded-xl">
-        <button onclick="setCategory('all')" id="tab-all" class="tab-btn px-5 py-2 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm">All Items</button>
-        <button onclick="setCategory('food')" id="tab-food" class="tab-btn px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">Foods 🍲</button>
-        <button onclick="setCategory('drink')" id="tab-drink" class="tab-btn px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">Drinks 🍹</button>
+    <!-- CONTROLS HEADER (Tabs & Search) -->
+    <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-8 pb-6 border-b border-slate-200">
+      
+      <!-- Category Filter Pills -->
+      <div class="flex gap-2 w-full md:w-auto bg-slate-200/80 p-1.5 rounded-2xl overflow-x-auto">
+        <button onclick="setCategory('all')" id="tab-all" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition bg-white text-slate-900 shadow-sm whitespace-nowrap">
+          All Items
+        </button>
+        <button onclick="setCategory('food')" id="tab-food" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 whitespace-nowrap">
+          Foods 🍛
+        </button>
+        <button onclick="setCategory('drink')" id="tab-drink" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 whitespace-nowrap">
+          Drinks 🍹
+        </button>
       </div>
 
-      <!-- Live Search Bar -->
-      <div class="relative w-full sm:w-72">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-        <input type="text" id="search-input" onkeyup="renderMenu()" placeholder="Search dishes..." 
-               class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+      <!-- Live Search Box -->
+      <div class="relative w-full md:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+        <input type="text" id="search-input" onkeyup="renderMenu()" placeholder="Search menu items..." 
+               class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none shadow-xs transition" />
       </div>
+
     </div>
 
-    <!-- FOOD GRID CONTAINER -->
+    <!-- FOOD GRID -->
     <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <div class="col-span-full text-center py-16 text-slate-400">
-        <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-indigo-600"></i>
-        <p class="text-sm font-medium">Loading freshly updated menu...</p>
+      <div class="col-span-full text-center py-20 bg-white rounded-3xl border border-slate-200/80">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-orange-500"></i>
+        <p class="text-sm font-semibold text-slate-600">Loading menu...</p>
       </div>
     </div>
 
   </main>
 
-  <!-- SLIDE-OUT CART DRAWER OVERLAY -->
+  <!-- SLIDE-OUT CART DRAWER -->
   <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
     <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity" onclick="toggleCart(false)"></div>
     
     <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform transition-transform duration-300 translate-x-full" id="drawer-panel">
       
-      <!-- Cart Header -->
       <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-bag-shopping text-indigo-600"></i>
-          <h2 class="font-bold text-slate-900 text-lg">Your Order</h2>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-sm">
+            <i class="fa-solid fa-bag-shopping"></i>
+          </div>
+          <h2 class="font-extrabold text-slate-900 text-base">Your Order Cart</h2>
         </div>
-        <button onclick="toggleCart(false)" class="p-2 text-slate-400 hover:text-slate-600">
+        <button onclick="toggleCart(false)" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/60 transition">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <!-- Cart Items List -->
       <div id="cart-items" class="flex-1 overflow-y-auto p-5 space-y-4">
-        <p class="text-center text-slate-400 text-sm py-10">Your cart is empty.</p>
+        <p class="text-center text-slate-400 text-sm py-12">Your cart is empty.</p>
       </div>
 
-      <!-- Checkout Section -->
-      <div class="p-5 border-t border-slate-100 bg-slate-50 space-y-4">
+      <div class="p-5 border-t border-slate-100 bg-slate-50/80 space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Your Email Address</label>
-          <input type="email" id="customer-email" placeholder="customer@example.com" required
-                 class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white" />
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Delivery Email</label>
+          <input type="email" id="customer-email" placeholder="your-email@example.com" required
+                 class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-white" />
         </div>
 
-        <div class="flex justify-between items-center text-sm">
-          <span class="text-slate-500 font-medium">Subtotal</span>
-          <span id="cart-total" class="font-bold text-slate-900 text-lg">₦0</span>
+        <div class="flex justify-between items-center text-sm pt-2">
+          <span class="text-slate-500 font-semibold">Total Payable</span>
+          <span id="cart-total" class="font-black text-slate-900 text-xl">₦0</span>
         </div>
 
-        <button id="checkout-btn" onclick="initiateCheckout()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-md shadow-indigo-200 transition flex items-center justify-center gap-2">
-          <i class="fa-solid fa-lock"></i> Pay Now with Paystack
+        <button id="checkout-btn" onclick="initiateCheckout()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-500/25 transition flex items-center justify-center gap-2 text-sm">
+          <i class="fa-solid fa-lock"></i> Proceed to Payment
         </button>
       </div>
 
@@ -124,9 +162,10 @@
   </div>
 
   <script>
+    // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE KEYS
     const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo
-";
+"; 
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -136,21 +175,44 @@
 
     // Fetch Menu Items from Supabase
     async function loadMenu() {
-      const { data, error } = await supabase
-        .from('menu_items')
-        .select('*')
-        .order('id', { ascending: false });
+      const grid = document.getElementById('menu-grid');
+      
+      try {
+        const { data, error } = await supabase
+          .from('menu_items')
+          .select('*')
+          .order('id', { ascending: false });
 
-      if (error) {
-        document.getElementById('menu-grid').innerHTML = `<p class="col-span-full text-center text-rose-500">Error loading menu: ${error.message}</p>`;
-        return;
+        if (error) throw error;
+
+        allMenuItems = data || [];
+
+        if (allMenuItems.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-dashed border-slate-200 p-6">
+              <i class="fa-solid fa-utensils text-4xl text-slate-300 mb-3"></i>
+              <h3 class="font-bold text-slate-800 text-base">No Menu Items Yet</h3>
+              <p class="text-slate-500 text-xs mt-1 mb-4">Go to the Admin panel to add your first dishes and drinks!</p>
+              <a href="./admin.html" class="inline-flex items-center gap-2 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl">
+                Open Admin Portal
+              </a>
+            </div>`;
+          return;
+        }
+
+        renderMenu();
+      } catch (err) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-rose-50 border border-rose-200 text-rose-700 rounded-3xl p-6">
+            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+            <p class="font-bold text-sm">Unable to connect to database</p>
+            <p class="text-xs mt-1 text-rose-600">${err.message}</p>
+            <p class="text-[11px] mt-3 text-slate-500">Make sure you updated <strong>SUPABASE_ANON_KEY</strong> in index.html!</p>
+          </div>`;
       }
-
-      allMenuItems = data || [];
-      renderMenu();
     }
 
-    // Render Menu Grid
+    // Render Menu Cards
     function renderMenu() {
       const grid = document.getElementById('menu-grid');
       const searchQuery = document.getElementById('search-input').value.toLowerCase();
@@ -162,52 +224,63 @@
       });
 
       if (itemsToDisplay.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">No items available.</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 font-medium">No dishes match your search.</div>`;
         return;
       }
 
       grid.innerHTML = itemsToDisplay.map(item => `
-        <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col ${!item.is_available ? 'opacity-60' : ''}">
-          <div class="h-48 w-full bg-slate-100 relative">
-            <img src="${item.image_url || 'https://via.placeholder.com/300'}" alt="${item.name}" class="w-full h-full object-cover" />
-            <span class="absolute top-3 right-3 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${item.category === 'drink' ? 'bg-pink-100 text-pink-700' : 'bg-blue-100 text-blue-700'} shadow-xs">
+        <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col group ${!item.is_available ? 'opacity-65' : ''}">
+          
+          <div class="h-48 w-full bg-slate-100 relative overflow-hidden">
+            <img src="${item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'}" 
+                 alt="${item.name}" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            
+            <span class="absolute top-3.5 right-3.5 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${item.category === 'drink' ? 'bg-pink-500 text-white' : 'bg-slate-900 text-white'} shadow-md">
               ${item.category}
             </span>
+
+            ${!item.is_available ? `
+              <div class="absolute inset-0 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center">
+                <span class="bg-rose-600 text-white text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg">Sold Out</span>
+              </div>
+            ` : ''}
           </div>
 
           <div class="p-5 flex-1 flex flex-col justify-between">
             <div>
-              <h3 class="font-bold text-slate-900 text-base mb-1">${item.name}</h3>
-              <p class="text-indigo-600 font-extrabold text-lg">₦${Number(item.price).toLocaleString()}</p>
+              <h3 class="font-extrabold text-slate-900 text-base mb-1 group-hover:text-orange-500 transition">${item.name}</h3>
+              <p class="text-orange-600 font-black text-xl">₦${Number(item.price).toLocaleString()}</p>
             </div>
 
-            <div class="mt-4">
+            <div class="mt-5">
               ${item.is_available ? `
-                <button onclick="addToCart(${item.id})" class="w-full bg-slate-900 hover:bg-indigo-600 text-white py-2.5 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-plus"></i> Add to Order
+                <button onclick="addToCart(${item.id})" class="w-full bg-slate-100 hover:bg-orange-500 hover:text-white text-slate-900 py-3 rounded-2xl font-bold text-xs transition flex items-center justify-center gap-2 group-hover:shadow-md">
+                  <i class="fa-solid fa-plus text-orange-500 group-hover:text-white transition"></i> Add to Order
                 </button>
               ` : `
-                <button disabled class="w-full bg-slate-200 text-slate-500 py-2.5 rounded-xl font-semibold text-xs cursor-not-allowed">
-                  Sold Out
+                <button disabled class="w-full bg-slate-100 text-slate-400 py-3 rounded-2xl font-bold text-xs cursor-not-allowed">
+                  Currently Unavailable
                 </button>
               `}
             </div>
           </div>
+
         </div>
       `).join('');
     }
 
-    // Category Tabs
+    // Filter Tabs
     function setCategory(cat) {
       activeCategory = cat;
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900";
+        btn.className = "tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 whitespace-nowrap";
       });
-      document.getElementById(`tab-${cat}`).className = "tab-btn px-5 py-2 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm";
+      document.getElementById(`tab-${cat}`).className = "tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition bg-white text-slate-900 shadow-sm whitespace-nowrap";
       renderMenu();
     }
 
-    // Cart Controls
+    // Cart Logic
     function addToCart(id) {
       const item = allMenuItems.find(i => i.id === id);
       if (!item) return;
@@ -244,21 +317,21 @@
       cartTotal.innerText = `₦${totalPrice.toLocaleString()}`;
 
       if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `<p class="text-center text-slate-400 text-sm py-10">Your cart is empty.</p>`;
+        cartItemsContainer.innerHTML = `<p class="text-center text-slate-400 text-sm py-12">Your cart is empty.</p>`;
         return;
       }
 
       cartItemsContainer.innerHTML = cart.map(item => `
-        <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+        <div class="flex items-center justify-between gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
           <div class="min-w-0 flex-1">
             <h4 class="font-bold text-slate-800 text-xs truncate">${item.name}</h4>
-            <p class="text-slate-500 text-xs">₦${Number(item.price).toLocaleString()}</p>
+            <p class="text-orange-600 font-extrabold text-xs">₦${Number(item.price).toLocaleString()}</p>
           </div>
 
           <div class="flex items-center gap-2">
-            <button onclick="updateQuantity(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-100">-</button>
-            <span class="text-xs font-bold text-slate-800 w-4 text-center">${item.quantity}</span>
-            <button onclick="updateQuantity(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-100">+</button>
+            <button onclick="updateQuantity(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700 hover:bg-slate-100">-</button>
+            <span class="text-xs font-black text-slate-800 w-4 text-center">${item.quantity}</span>
+            <button onclick="updateQuantity(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700 hover:bg-slate-100">+</button>
           </div>
         </div>
       `).join('');
@@ -277,7 +350,6 @@
       }
     }
 
-    // Paystack Payment Trigger
     async function initiateCheckout() {
       const email = document.getElementById('customer-email').value;
       if (!email) return alert("Please enter your email address.");
@@ -290,15 +362,10 @@
       const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
       try {
-        // Call Netlify function to initialize Paystack transaction
         const response = await fetch('/.netlify/functions/create-paystack-checkout', {
           method: 'POST',
-          headers: { 'Content-Type': 'json' },
-          body: JSON.stringify({
-            email,
-            amount: totalAmount,
-            cart
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, amount: totalAmount, cart })
         });
 
         const data = await response.json();
@@ -310,8 +377,8 @@
             email: email,
             amount: totalAmount * 100,
             ref: data.reference,
-            callback: function(response) {
-              alert('Payment complete! Reference: ' + response.reference);
+            callback: function(res) {
+              alert('Payment complete! Reference: ' + res.reference);
               cart = [];
               updateCartUi();
               toggleCart(false);
@@ -319,13 +386,13 @@
           });
           handler.openIframe();
         } else {
-          throw new Error(data.error || "Checkout initiation failed");
+          throw new Error(data.error || "Checkout failed");
         }
       } catch (err) {
         alert("Payment Error: " + err.message);
       } finally {
         checkoutBtn.disabled = false;
-        checkoutBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay Now with Paystack`;
+        checkoutBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Proceed to Payment`;
       }
     }
 
