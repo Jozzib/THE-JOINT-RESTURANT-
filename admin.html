@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard - The Joint</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -106,15 +109,16 @@
   </div>
 
   <script>
-    // ⚠️ REPLACE WITH YOUR REAL SUPABASE KEY
+    // SUPABASE CREDENTIALS
     const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo";
 
+    // INITIALIZE SUPABASE CLIENT
     let supabase = null;
-    if (SUPABASE_ANON_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo") {
+    if (window.supabase && SUPABASE_ANON_KEY) {
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
-      alert("⚠️ Attention: Please put your SUPABASE_ANON_KEY in admin.html!");
+      alert("⚠️ Supabase SDK failed to load. Check your internet connection or script tag.");
     }
 
     // PREVIEW SELECTED FILE
@@ -150,7 +154,7 @@
     async function fetchAdminMenu() {
       const list = document.getElementById('admin-menu-list');
       if (!supabase) {
-        list.innerHTML = `<div class="p-4 bg-amber-50 text-amber-800 rounded-2xl text-xs font-bold">Supabase key not configured</div>`;
+        list.innerHTML = `<div class="p-4 bg-amber-50 text-amber-800 rounded-2xl text-xs font-bold">Supabase client not initialized</div>`;
         return;
       }
 
@@ -198,7 +202,7 @@
     async function handleAddFood(e) {
       e.preventDefault();
 
-      if (!supabase) return alert("Please paste your SUPABASE_ANON_KEY!");
+      if (!supabase) return alert("Supabase client is not available!");
 
       const btn = document.getElementById('submit-btn');
       const name = document.getElementById('food-name').value;
@@ -223,7 +227,7 @@
             .upload(fileName, file);
 
           if (uploadError) {
-            throw new Error(`Image Upload Failed: ${uploadError.message}. Did you create the public 'menu-images' bucket in Supabase?`);
+            throw new Error(`Image Upload Failed: ${uploadError.message}. Make sure the public bucket 'menu-images' exists in Supabase Storage.`);
           }
 
           // Get Public URL
@@ -285,7 +289,8 @@
       }
     }
 
-    fetchAdminMenu();
+    // INITIAL LOAD
+    document.addEventListener('DOMContentLoaded', fetchAdminMenu);
   </script>
 </body>
 </html>
