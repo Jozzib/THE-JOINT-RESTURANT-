@@ -1,0 +1,86 @@
+:root {
+  --ink: #20251d;
+  --cream: #f7f3e9;
+  --orange: #e85d2a;
+  --muted: #6d7269;
+  --line: #e5dfd2;
+  --green: #315340;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.site-header {
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(24px, 6vw, 96px);
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 243, 233, 0.94);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(12px);
+}
+
+.brand {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.brand span {
+  display: block;
+  margin-top: 2px;
+  color: var(--orange);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+}
+
+.site-header nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.site-header nav a {
+  color: var(--ink);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.cart-button {
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 99px;
+  background: var(--ink);
+  color: white;
+  cursor: pointer;
+}
+
+.cart-button span {
+  display: inline-grid;
+  width: 19px;
+  height: 19px;
+  margin-left: 5
