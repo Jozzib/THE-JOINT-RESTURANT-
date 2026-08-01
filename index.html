@@ -51,11 +51,10 @@
     </div>
   </header>
 
-  <!-- HERO BANNER WITH BACKGROUND IMAGE OVERLAY -->
-  <section class="relative bg-slate-900 text-white py-16 sm:py-24 px-4 sm:px-6 overflow-hidden">
-    <!-- Background Image with Dark Gradient -->
-    <div class="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
-      <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=80" alt="Restaurant hero background" class="w-full h-full object-cover" />
+  <!-- HERO BANNER -->
+  <section class="relative bg-slate-900 text-white py-14 sm:py-20 px-4 sm:px-6 overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-30 mix-blend-overlay">
+      <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=80" alt="Restaurant background" class="w-full h-full object-cover" />
     </div>
     <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent z-0"></div>
 
@@ -64,19 +63,12 @@
         <span class="inline-block px-3.5 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-extrabold uppercase tracking-wider mb-4">
           🔥 Freshly Made Daily
         </span>
-        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4">
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-3">
           Craving Something <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">Delicious?</span>
         </h1>
-        <p class="text-slate-300 text-sm sm:text-base max-w-lg mb-8 leading-relaxed">
-          Order authentic local dishes and cold drinks online. Fast preparation, seamless Paystack checkout, and hot food delivered right to you.
+        <p class="text-slate-300 text-sm sm:text-base max-w-lg mb-6 leading-relaxed">
+          Select your portion size, customize extra swallows, and check out securely in seconds!
         </p>
-
-        <!-- Feature Highlights Bar -->
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-6 text-xs text-slate-300 font-semibold">
-          <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-orange-400"></i> 20-30 Mins Prep</div>
-          <div class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-emerald-400"></i> Paystack Secured</div>
-          <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-amber-400"></i> Fresh Ingredients</div>
-        </div>
       </div>
     </div>
   </section>
@@ -84,29 +76,19 @@
   <!-- MENU EXPLORER SECTION -->
   <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-10">
     
-    <!-- CONTROLS HEADER (Tabs & Search) -->
+    <!-- CONTROLS HEADER -->
     <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-8 pb-6 border-b border-slate-200">
-      
-      <!-- Category Filter Pills -->
       <div class="flex gap-2 w-full md:w-auto bg-slate-200/80 p-1.5 rounded-2xl overflow-x-auto">
-        <button onclick="setCategory('all')" id="tab-all" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition bg-white text-slate-900 shadow-sm whitespace-nowrap">
-          All Items
-        </button>
-        <button onclick="setCategory('food')" id="tab-food" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 whitespace-nowrap">
-          Foods 🍛
-        </button>
-        <button onclick="setCategory('drink')" id="tab-drink" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 whitespace-nowrap">
-          Drinks 🍹
-        </button>
+        <button onclick="setCategory('all')" id="tab-all" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition bg-white text-slate-900 shadow-sm whitespace-nowrap">All Items</button>
+        <button onclick="setCategory('food')" id="tab-food" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 whitespace-nowrap">Foods 🍲</button>
+        <button onclick="setCategory('drink')" id="tab-drink" class="tab-btn px-6 py-2.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 whitespace-nowrap">Drinks 🍹</button>
       </div>
 
-      <!-- Live Search Box -->
       <div class="relative w-full md:w-80">
         <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-sm"></i>
-        <input type="text" id="search-input" onkeyup="renderMenu()" placeholder="Search menu items..." 
+        <input type="text" id="search-input" onkeyup="renderMenu()" placeholder="Search dishes or drinks..." 
                class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none shadow-xs transition" />
       </div>
-
     </div>
 
     <!-- FOOD GRID -->
@@ -118,6 +100,79 @@
     </div>
 
   </main>
+
+  <!-- ITEM CUSTOMIZATION MODAL -->
+  <div id="customize-modal" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-200 opacity-0 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs" onclick="closeModal()"></div>
+    
+    <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto transform transition-transform duration-200 scale-95" id="modal-box">
+      <!-- Modal Header -->
+      <div class="relative h-40 bg-slate-100">
+        <img id="modal-img" src="" alt="Dish" class="w-full h-full object-cover" />
+        <button onclick="closeModal()" class="absolute top-3 right-3 bg-slate-900/70 hover:bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+        <div>
+          <h2 id="modal-title" class="text-xl font-black text-slate-900">Item Name</h2>
+          <p id="modal-base-price" class="text-orange-600 font-extrabold text-lg">₦0</p>
+        </div>
+
+        <!-- Portion Selector -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Number of Portions</label>
+          <div class="flex items-center gap-3">
+            <button onclick="adjustModalQty(-1)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-800 text-lg flex items-center justify-center">-</button>
+            <span id="modal-qty" class="font-extrabold text-lg text-slate-900 min-w-[20px] text-center">1</span>
+            <button onclick="adjustModalQty(1)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-800 text-lg flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+        <!-- Swallow Options (Only shown if category is Food) -->
+        <div id="swallow-section" class="border-t border-slate-100 pt-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="extra-swallow-check" onchange="toggleSwallowOptions()" class="w-4 h-4 rounded text-orange-500 focus:ring-orange-400" />
+              <span class="text-xs font-extrabold text-slate-800 uppercase">Add Extra Swallow (+₦500)</span>
+            </label>
+          </div>
+
+          <div id="swallow-select-box" class="hidden space-y-2 pl-6">
+            <label class="block text-xs font-semibold text-slate-500">Choose Swallow Type:</label>
+            <select id="swallow-type" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
+              <option value="Eba (Garri)">Eba (Garri)</option>
+              <option value="Semo">Semo</option>
+              <option value="Pounded Yam">Pounded Yam (+₦300 extra)</option>
+              <option value="Amala">Amala</option>
+              <option value="Wheat">Wheat</option>
+              <option value="Fufu">Fufu</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Special Request Note -->
+        <div class="border-t border-slate-100 pt-4">
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Special Instructions (Optional)</label>
+          <input type="text" id="modal-note" placeholder="e.g. Extra pepper, no onions, warm soup..." 
+                 class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none" />
+        </div>
+      </div>
+
+      <!-- Modal Footer Add Button -->
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-4">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase block">Total Price</span>
+          <span id="modal-calculated-total" class="font-black text-slate-900 text-lg">₦0</span>
+        </div>
+        <button onclick="confirmAddToCart()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus"></i> Add to Order
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- SLIDE-OUT CART DRAWER -->
   <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
@@ -162,7 +217,7 @@
   </div>
 
   <script>
-    // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE KEYS
+    // ⚠️ PASTE YOUR ACTUAL SUPABASE KEYS HERE
     const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo
 "; 
@@ -172,6 +227,10 @@
     let allMenuItems = [];
     let activeCategory = 'all';
     let cart = [];
+
+    // Modal State
+    let selectedItem = null;
+    let modalQty = 1;
 
     // Fetch Menu Items from Supabase
     async function loadMenu() {
@@ -192,7 +251,7 @@
             <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-dashed border-slate-200 p-6">
               <i class="fa-solid fa-utensils text-4xl text-slate-300 mb-3"></i>
               <h3 class="font-bold text-slate-800 text-base">No Menu Items Yet</h3>
-              <p class="text-slate-500 text-xs mt-1 mb-4">Go to the Admin panel to add your first dishes and drinks!</p>
+              <p class="text-slate-500 text-xs mt-1 mb-4">Go to the Admin portal to add food and drink items!</p>
               <a href="./admin.html" class="inline-flex items-center gap-2 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl">
                 Open Admin Portal
               </a>
@@ -207,7 +266,6 @@
             <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
             <p class="font-bold text-sm">Unable to connect to database</p>
             <p class="text-xs mt-1 text-rose-600">${err.message}</p>
-            <p class="text-[11px] mt-3 text-slate-500">Make sure you updated <strong>SUPABASE_ANON_KEY</strong> in index.html!</p>
           </div>`;
       }
     }
@@ -255,8 +313,8 @@
 
             <div class="mt-5">
               ${item.is_available ? `
-                <button onclick="addToCart(${item.id})" class="w-full bg-slate-100 hover:bg-orange-500 hover:text-white text-slate-900 py-3 rounded-2xl font-bold text-xs transition flex items-center justify-center gap-2 group-hover:shadow-md">
-                  <i class="fa-solid fa-plus text-orange-500 group-hover:text-white transition"></i> Add to Order
+                <button onclick="openCustomizeModal(${item.id})" class="w-full bg-slate-100 hover:bg-orange-500 hover:text-white text-slate-900 py-3 rounded-2xl font-bold text-xs transition flex items-center justify-center gap-2 group-hover:shadow-md">
+                  <i class="fa-solid fa-sliders text-orange-500 group-hover:text-white transition"></i> Customize & Add
                 </button>
               ` : `
                 <button disabled class="w-full bg-slate-100 text-slate-400 py-3 rounded-2xl font-bold text-xs cursor-not-allowed">
@@ -270,6 +328,106 @@
       `).join('');
     }
 
+    // Modal Control & Swallow Options
+    function openCustomizeModal(id) {
+      selectedItem = allMenuItems.find(i => i.id === id);
+      if (!selectedItem) return;
+
+      modalQty = 1;
+      document.getElementById('modal-title').innerText = selectedItem.name;
+      document.getElementById('modal-base-price').innerText = `₦${Number(selectedItem.price).toLocaleString()}`;
+      document.getElementById('modal-img').src = selectedItem.image_url || 'https://via.placeholder.com/300';
+      document.getElementById('modal-qty').innerText = modalQty;
+      document.getElementById('extra-swallow-check').checked = false;
+      document.getElementById('swallow-select-box').classList.add('hidden');
+      document.getElementById('modal-note').value = '';
+
+      // Hide swallow option for drinks
+      const swallowSec = document.getElementById('swallow-section');
+      if (selectedItem.category === 'drink') swallowSec.classList.add('hidden');
+      else swallowSec.classList.remove('hidden');
+
+      recalculateModalPrice();
+
+      const modal = document.getElementById('customize-modal');
+      const box = document.getElementById('modal-box');
+      modal.classList.remove('pointer-events-none', 'opacity-0');
+      box.classList.remove('scale-95');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('customize-modal');
+      const box = document.getElementById('modal-box');
+      modal.classList.add('pointer-events-none', 'opacity-0');
+      box.classList.add('scale-95');
+    }
+
+    function adjustModalQty(change) {
+      if (modalQty + change >= 1) {
+        modalQty += change;
+        document.getElementById('modal-qty').innerText = modalQty;
+        recalculateModalPrice();
+      }
+    }
+
+    function toggleSwallowOptions() {
+      const checked = document.getElementById('extra-swallow-check').checked;
+      const box = document.getElementById('swallow-select-box');
+      if (checked) box.classList.remove('hidden');
+      else box.classList.add('hidden');
+      recalculateModalPrice();
+    }
+
+    function recalculateModalPrice() {
+      if (!selectedItem) return;
+      
+      let pricePerPortion = Number(selectedItem.price);
+      const isSwallowChecked = document.getElementById('extra-swallow-check').checked;
+      
+      if (isSwallowChecked) {
+        pricePerPortion += 500; // Base swallow cost
+        const swallowType = document.getElementById('swallow-type').value;
+        if (swallowType.includes("Pounded Yam")) pricePerPortion += 300;
+      }
+
+      const total = pricePerPortion * modalQty;
+      document.getElementById('modal-calculated-total').innerText = `₦${total.toLocaleString()}`;
+    }
+
+    document.getElementById('swallow-type').addEventListener('change', recalculateModalPrice);
+
+    function confirmAddToCart() {
+      if (!selectedItem) return;
+
+      const isSwallowChecked = document.getElementById('extra-swallow-check').checked;
+      const swallowType = document.getElementById('swallow-type').value;
+      const note = document.getElementById('modal-note').value;
+
+      let extraPrice = 0;
+      let swallowInfo = "";
+
+      if (isSwallowChecked && selectedItem.category !== 'drink') {
+        extraPrice += 500;
+        if (swallowType.includes("Pounded Yam")) extraPrice += 300;
+        swallowInfo = `Extra ${swallowType}`;
+      }
+
+      const finalUnitPrice = Number(selectedItem.price) + extraPrice;
+      const itemTitle = `${selectedItem.name}${swallowInfo ? ` (+ ${swallowInfo})` : ''}${note ? ` [Note: ${note}]` : ''}`;
+
+      cart.push({
+        id: Date.now(), // unique cart item ID
+        originalId: selectedItem.id,
+        name: itemTitle,
+        price: finalUnitPrice,
+        quantity: modalQty
+      });
+
+      closeModal();
+      updateCartUi();
+      toggleCart(true);
+    }
+
     // Filter Tabs
     function setCategory(cat) {
       activeCategory = cat;
@@ -280,24 +438,9 @@
       renderMenu();
     }
 
-    // Cart Logic
-    function addToCart(id) {
-      const item = allMenuItems.find(i => i.id === id);
-      if (!item) return;
-
-      const existing = cart.find(c => c.id === id);
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        cart.push({ ...item, quantity: 1 });
-      }
-
-      updateCartUi();
-      toggleCart(true);
-    }
-
-    function updateQuantity(id, change) {
-      const index = cart.findIndex(c => c.id === id);
+    // Cart Drawer Controls
+    function updateQuantity(cartId, change) {
+      const index = cart.findIndex(c => c.id === cartId);
       if (index > -1) {
         cart[index].quantity += change;
         if (cart[index].quantity <= 0) cart.splice(index, 1);
@@ -324,11 +467,11 @@
       cartItemsContainer.innerHTML = cart.map(item => `
         <div class="flex items-center justify-between gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
           <div class="min-w-0 flex-1">
-            <h4 class="font-bold text-slate-800 text-xs truncate">${item.name}</h4>
-            <p class="text-orange-600 font-extrabold text-xs">₦${Number(item.price).toLocaleString()}</p>
+            <h4 class="font-bold text-slate-800 text-xs leading-snug">${item.name}</h4>
+            <p class="text-orange-600 font-extrabold text-xs mt-0.5">₦${Number(item.price).toLocaleString()} / portion</p>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <button onclick="updateQuantity(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700 hover:bg-slate-100">-</button>
             <span class="text-xs font-black text-slate-800 w-4 text-center">${item.quantity}</span>
             <button onclick="updateQuantity(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700 hover:bg-slate-100">+</button>
