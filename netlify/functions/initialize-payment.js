@@ -33,12 +33,11 @@ exports.handler = async (event) => {
     const itemIds = items.map((item) => Number(item.id)).filter(Boolean);
 
     // FIX: Removed &available=eq.true because the column does not exist in Supabase
-    const menuResponse = await fetch(
-      `${supabaseUrl}/rest/v1/menu_items?select=id,price&id=in.(${itemIds.join(",")})`,
-      {
-        headers: {
-          apikey: supabaseServiceKey,
-          Authorization: `Bearer ${supabaseServiceKey}`,
+    if (!menuResponse.ok) {
+      const errorDetails = await menuResponse.text();
+      console.error("Supabase Error:", errorDetails);
+      throw new Error(`Supabase Error (${menuResponse.status}): ${errorDetails}`);
+    }
         },
       }
     );
