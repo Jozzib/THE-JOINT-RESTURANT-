@@ -212,12 +212,13 @@
   </div>
 
   <script>
-    // ⬇️ REPLACE THIS WITH YOUR REAL SUPABASE ANON KEY ⬇️
+    // SUPABASE CREDENTIALS
     const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo"; 
 
+    // INITIALIZE SUPABASE CLIENT PROPERLY
     let supabase = null;
-    if (SUPABASE_ANON_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo") {
+    if (window.supabase && SUPABASE_ANON_KEY) {
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
@@ -236,9 +237,9 @@
         grid.innerHTML = `
           <div class="col-span-full text-center py-12 bg-amber-50 border border-amber-200 text-amber-900 rounded-3xl p-6">
             <i class="fa-solid fa-key text-3xl text-amber-500 mb-2"></i>
-            <p class="font-bold text-base">Supabase Key Required</p>
+            <p class="font-bold text-base">Supabase Initialization Failed</p>
             <p class="text-xs text-amber-700 mt-1 max-w-md mx-auto">
-              Please edit <strong>index.html</strong> and replace <code>YOUR_SUPABASE_ANON_KEY</code> on line 185 with your actual key from Supabase Dashboard!
+              Please ensure the Supabase library is loaded correctly.
             </p>
           </div>`;
         return;
@@ -539,7 +540,8 @@
       }
     }
 
-    loadMenu();
+    // LOAD MENU ON DOM LOAD
+    document.addEventListener('DOMContentLoaded', loadMenu);
   </script>
 </body>
 </html>
