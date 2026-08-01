@@ -1,242 +1,335 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>THE JOINT RESTURANT | Order Food</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bistro Restaurant - Order Online</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Paystack Popup JS -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
-  <body>
-    <header class="site-header">
-      <a class="brand" href="#top">
-        THE JOINT
-        <span>RESTURANT</span>
-      </a>
+  <!-- TOP HEADER / NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-indigo-200">
+          <i class="fa-solid fa-utensils"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold text-slate-900 tracking-tight">The Joint</span>
+          <span class="block text-[11px] font-semibold text-emerald-600">● Open for orders</span>
+        </div>
+      </div>
 
-      <nav>
-        <a href="#menu">Menu</a>
-        <a href="#how-it-works">How it works</a>
-        <button class="cart-button" id="openCart" aria-label="Open order cart">
-          Order <span id="cartCount">0</span>
+      <!-- CART TRIGGER BUTTON -->
+      <button onclick="toggleCart(true)" class="relative bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2.5">
+        <i class="fa-solid fa-bag-shopping text-indigo-400"></i>
+        <span>My Order</span>
+        <span id="cart-badge" class="bg-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- HERO BANNER -->
+  <section class="bg-slate-900 text-white py-12 px-4 sm:px-6 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto relative z-10 text-center sm:text-left">
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-3">Delicious Food,<br class="hidden sm:inline" /> Delivered To Your Table.</h1>
+      <p class="text-slate-400 max-w-xl text-sm sm:text-base">Freshly prepared local dishes and refreshing drinks. Choose your favorites and check out online in seconds.</p>
+    </div>
+  </section>
+
+  <!-- MAIN MENU SECTION -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+    
+    <!-- CATEGORY FILTER TABS & SEARCH -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-between items-center mb-8">
+      <div class="flex gap-2 w-full sm:w-auto bg-slate-200/70 p-1.5 rounded-xl">
+        <button onclick="setCategory('all')" id="tab-all" class="tab-btn px-5 py-2 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm">All Items</button>
+        <button onclick="setCategory('food')" id="tab-food" class="tab-btn px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">Foods 🍲</button>
+        <button onclick="setCategory('drink')" id="tab-drink" class="tab-btn px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">Drinks 🍹</button>
+      </div>
+
+      <!-- Live Search Bar -->
+      <div class="relative w-full sm:w-72">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+        <input type="text" id="search-input" onkeyup="renderMenu()" placeholder="Search dishes..." 
+               class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+      </div>
+    </div>
+
+    <!-- FOOD GRID CONTAINER -->
+    <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="col-span-full text-center py-16 text-slate-400">
+        <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-indigo-600"></i>
+        <p class="text-sm font-medium">Loading freshly updated menu...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SLIDE-OUT CART DRAWER OVERLAY -->
+  <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
+    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity" onclick="toggleCart(false)"></div>
+    
+    <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto transform transition-transform duration-300 translate-x-full" id="drawer-panel">
+      
+      <!-- Cart Header -->
+      <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-bag-shopping text-indigo-600"></i>
+          <h2 class="font-bold text-slate-900 text-lg">Your Order</h2>
+        </div>
+        <button onclick="toggleCart(false)" class="p-2 text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
-      </nav>
-    </header>
+      </div>
 
-    <main id="top">
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">GOOD FOOD. GOOD MOOD.</p>
-          <h1>Your favourite meal,<br /><em>right at your door.</em></h1>
+      <!-- Cart Items List -->
+      <div id="cart-items" class="flex-1 overflow-y-auto p-5 space-y-4">
+        <p class="text-center text-slate-400 text-sm py-10">Your cart is empty.</p>
+      </div>
 
-          <p class="hero-text">
-            Freshly prepared Nigerian favourites, ready for pickup or delivery.
-            Order in a few taps.
-          </p>
-
-          <a class="primary-button" href="#menu">
-            Explore today’s menu <span>→</span>
-          </a>
-
-          <div class="trust-row">
-            <span>★ 4.9 rating</span>
-            <span>•</span>
-            <span>Fast local delivery</span>
-          </div>
+      <!-- Checkout Section -->
+      <div class="p-5 border-t border-slate-100 bg-slate-50 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Your Email Address</label>
+          <input type="email" id="customer-email" placeholder="customer@example.com" required
+                 class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white" />
         </div>
 
-        <div class="hero-image-wrap">
-          <img
-            src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1100&q=85"
-            alt="A colourful Nigerian meal"
-          />
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-500 font-medium">Subtotal</span>
+          <span id="cart-total" class="font-bold text-slate-900 text-lg">₦0</span>
+        </div>
 
-          <div class="hero-note">
-            <span>🍲</span>
+        <button id="checkout-btn" onclick="initiateCheckout()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-md shadow-indigo-200 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-lock"></i> Pay Now with Paystack
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo
+";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let allMenuItems = [];
+    let activeCategory = 'all';
+    let cart = [];
+
+    // Fetch Menu Items from Supabase
+    async function loadMenu() {
+      const { data, error } = await supabase
+        .from('menu_items')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        document.getElementById('menu-grid').innerHTML = `<p class="col-span-full text-center text-rose-500">Error loading menu: ${error.message}</p>`;
+        return;
+      }
+
+      allMenuItems = data || [];
+      renderMenu();
+    }
+
+    // Render Menu Grid
+    function renderMenu() {
+      const grid = document.getElementById('menu-grid');
+      const searchQuery = document.getElementById('search-input').value.toLowerCase();
+
+      const itemsToDisplay = allMenuItems.filter(item => {
+        const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (itemsToDisplay.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">No items available.</div>`;
+        return;
+      }
+
+      grid.innerHTML = itemsToDisplay.map(item => `
+        <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col ${!item.is_available ? 'opacity-60' : ''}">
+          <div class="h-48 w-full bg-slate-100 relative">
+            <img src="${item.image_url || 'https://via.placeholder.com/300'}" alt="${item.name}" class="w-full h-full object-cover" />
+            <span class="absolute top-3 right-3 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${item.category === 'drink' ? 'bg-pink-100 text-pink-700' : 'bg-blue-100 text-blue-700'} shadow-xs">
+              ${item.category}
+            </span>
+          </div>
+
+          <div class="p-5 flex-1 flex flex-col justify-between">
             <div>
-              <strong>Made with love</strong>
-              <small>Fresh every day</small>
+              <h3 class="font-bold text-slate-900 text-base mb-1">${item.name}</h3>
+              <p class="text-indigo-600 font-extrabold text-lg">₦${Number(item.price).toLocaleString()}</p>
+            </div>
+
+            <div class="mt-4">
+              ${item.is_available ? `
+                <button onclick="addToCart(${item.id})" class="w-full bg-slate-900 hover:bg-indigo-600 text-white py-2.5 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-plus"></i> Add to Order
+                </button>
+              ` : `
+                <button disabled class="w-full bg-slate-200 text-slate-500 py-2.5 rounded-xl font-semibold text-xs cursor-not-allowed">
+                  Sold Out
+                </button>
+              `}
             </div>
           </div>
         </div>
-      </section>
+      `).join('');
+    }
 
-      <section class="menu-section" id="menu">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">WHAT’S COOKING</p>
-            <h2>Today’s menu</h2>
+    // Category Tabs
+    function setCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn px-5 py-2 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900";
+      });
+      document.getElementById(`tab-${cat}`).className = "tab-btn px-5 py-2 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm";
+      renderMenu();
+    }
+
+    // Cart Controls
+    function addToCart(id) {
+      const item = allMenuItems.find(i => i.id === id);
+      if (!item) return;
+
+      const existing = cart.find(c => c.id === id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...item, quantity: 1 });
+      }
+
+      updateCartUi();
+      toggleCart(true);
+    }
+
+    function updateQuantity(id, change) {
+      const index = cart.findIndex(c => c.id === id);
+      if (index > -1) {
+        cart[index].quantity += change;
+        if (cart[index].quantity <= 0) cart.splice(index, 1);
+      }
+      updateCartUi();
+    }
+
+    function updateCartUi() {
+      const cartItemsContainer = document.getElementById('cart-items');
+      const cartBadge = document.getElementById('cart-badge');
+      const cartTotal = document.getElementById('cart-total');
+
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+      cartBadge.innerText = totalItems;
+      cartTotal.innerText = `₦${totalPrice.toLocaleString()}`;
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `<p class="text-center text-slate-400 text-sm py-10">Your cart is empty.</p>`;
+        return;
+      }
+
+      cartItemsContainer.innerHTML = cart.map(item => `
+        <div class="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+          <div class="min-w-0 flex-1">
+            <h4 class="font-bold text-slate-800 text-xs truncate">${item.name}</h4>
+            <p class="text-slate-500 text-xs">₦${Number(item.price).toLocaleString()}</p>
           </div>
 
-          <div class="filters" id="filters"></div>
+          <div class="flex items-center gap-2">
+            <button onclick="updateQuantity(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-100">-</button>
+            <span class="text-xs font-bold text-slate-800 w-4 text-center">${item.quantity}</span>
+            <button onclick="updateQuantity(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-100">+</button>
+          </div>
         </div>
+      `).join('');
+    }
 
-        <div class="food-grid" id="foodGrid"></div>
-      </section>
+    function toggleCart(open) {
+      const drawer = document.getElementById('cart-drawer');
+      const panel = document.getElementById('drawer-panel');
 
-      <section class="info-strip" id="how-it-works">
-        <div>
-          <span class="step">01</span>
-          <h3>Choose your meal</h3>
-          <p>Pick from the fresh dishes on today’s menu.</p>
-        </div>
+      if (open) {
+        drawer.classList.remove('pointer-events-none', 'opacity-0');
+        panel.classList.remove('translate-x-full');
+      } else {
+        drawer.classList.add('pointer-events-none', 'opacity-0');
+        panel.classList.add('translate-x-full');
+      }
+    }
 
-        <div>
-          <span class="step">02</span>
-          <h3>Place your order</h3>
-          <p>Add your delivery details and preferred payment.</p>
-        </div>
+    // Paystack Payment Trigger
+    async function initiateCheckout() {
+      const email = document.getElementById('customer-email').value;
+      if (!email) return alert("Please enter your email address.");
+      if (cart.length === 0) return alert("Your cart is empty!");
 
-        <div>
-          <span class="step">03</span>
-          <h3>Enjoy!</h3>
-          <p>We’ll prepare it fresh and bring it to you.</p>
-        </div>
-      </section>
-    </main>
+      const checkoutBtn = document.getElementById('checkout-btn');
+      checkoutBtn.disabled = true;
+      checkoutBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
 
-    <footer>
-      <a class="brand" href="#top">
-        THE JOINT
-        <span>RESTURANT</span>
-      </a>
+      const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-      <p>Fresh food, always.</p>
-    </footer>
+      try {
+        // Call Netlify function to initialize Paystack transaction
+        const response = await fetch('/.netlify/functions/create-paystack-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'json' },
+          body: JSON.stringify({
+            email,
+            amount: totalAmount,
+            cart
+          })
+        });
 
-    <aside
-      class="cart-panel"
-      id="cartPanel"
-      aria-label="Your order"
-      aria-hidden="true"
-    >
-      <div class="cart-head">
-        <div>
-          <p class="eyebrow">YOUR ORDER</p>
-          <h2>Your basket</h2>
-        </div>
+        const data = await response.json();
+        if (data.authorization_url) {
+          window.location.href = data.authorization_url;
+        } else if (data.access_code) {
+          const handler = PaystackPop.setup({
+            key: data.public_key,
+            email: email,
+            amount: totalAmount * 100,
+            ref: data.reference,
+            callback: function(response) {
+              alert('Payment complete! Reference: ' + response.reference);
+              cart = [];
+              updateCartUi();
+              toggleCart(false);
+            }
+          });
+          handler.openIframe();
+        } else {
+          throw new Error(data.error || "Checkout initiation failed");
+        }
+      } catch (err) {
+        alert("Payment Error: " + err.message);
+      } finally {
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay Now with Paystack`;
+      }
+    }
 
-        <button class="close-button" id="closeCart" aria-label="Close order">
-          ×
-        </button>
-      </div>
-
-      <div class="cart-items" id="cartItems"></div>
-
-      <div class="empty-cart" id="emptyCart">
-        Your basket is empty.<br />
-        <a href="#menu" id="browseMenu">Browse the menu</a>
-      </div>
-
-      <div class="cart-footer" id="cartFooter">
-        <div class="total-row">
-          <span>Subtotal</span>
-          <strong id="cartTotal">₦0</strong>
-        </div>
-
-        <button class="primary-button checkout-button" id="checkout">
-          Continue to checkout <span>→</span>
-        </button>
-      </div>
-    </aside>
-
-    <div class="overlay" id="overlay"></div>
-
-    <section
-      class="checkout-modal"
-      id="checkoutModal"
-      aria-hidden="true"
-    >
-      <div class="checkout-card">
-        <button
-          class="close-button close-checkout"
-          aria-label="Close checkout"
-        >
-          ×
-        </button>
-
-        <p class="eyebrow">ALMOST THERE</p>
-        <h2>Delivery details</h2>
-
-        <form id="orderForm">
-          <label>
-            Full name
-            <input required name="name" placeholder="Your name" />
-          </label>
-
-          <label>
-            Phone number
-            <input
-              required
-              name="phone"
-              type="tel"
-              placeholder="0800 000 0000"
-            />
-          </label>
-<label>
-  Email address
-  <input
-    required
-    name="email"
-    type="email"
-    placeholder="you@example.com"
-  />
-</label>
-          <label>
-            Delivery address
-            <textarea
-              required
-              name="address"
-              placeholder="Street, area and nearest landmark"
-            ></textarea>
-          </label>
-
-          <fieldset>
-            <legend>How would you like to pay?</legend>
-
-            <label class="payment-option">
-              <input type="radio" name="payment" value="Pay Online" checked />
-              <span>
-                <strong>Pay online</strong>
-                <small>Secure card or bank transfer payment</small>
-              </span>
-            </label>
-
-            <label class="payment-option">
-              <input type="radio" name="payment" value="Pay on Delivery" />
-              <span>
-                <strong>Pay on delivery</strong>
-                <small>Pay in cash or transfer when it arrives</small>
-              </span>
-            </label>
-          </fieldset>
-
-          <button class="primary-button submit-order" type="submit">
-            Place my order <span>→</span>
-          </button>
-        </form>
-      </div>
-    </section>
-
-    <section class="success-modal" id="successModal" aria-hidden="true">
-      <div class="success-card">
-        <div class="success-icon">✓</div>
-        <p class="eyebrow">ORDER RECEIVED</p>
-        <h2>Thank you!</h2>
-        <p id="successMessage">We’ve received your order.</p>
-        <button class="primary-button" id="finishOrder">
-          Back to menu
-        </button>
-      </div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=3"></script>
-  </body>
+    loadMenu();
+  </script>
+</body>
 </html>
