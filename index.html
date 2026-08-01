@@ -36,17 +36,12 @@
         </div>
       </a>
 
-      <!-- Quick Nav Links + Cart -->
-      <div class="flex items-center gap-4">
-        <a href="./admin.html" class="hidden sm:inline-flex text-xs font-bold text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg transition">Admin</a>
-        <a href="./manager.html" class="hidden sm:inline-flex text-xs font-bold text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg transition">Kitchen</a>
-
-        <button onclick="toggleCart(true)" class="relative bg-slate-900 hover:bg-orange-600 text-white px-5 py-2.5 rounded-2xl font-bold text-xs shadow-lg shadow-slate-900/10 hover:shadow-orange-500/20 transition flex items-center gap-2.5 group">
-          <i class="fa-solid fa-bag-shopping text-orange-400 group-hover:text-white transition"></i>
-          <span>My Order</span>
-          <span id="cart-badge" class="bg-orange-500 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full min-w-[20px] text-center">0</span>
-        </button>
-      </div>
+      <!-- Public Cart Button Only -->
+      <button onclick="toggleCart(true)" class="relative bg-slate-900 hover:bg-orange-600 text-white px-5 py-2.5 rounded-2xl font-bold text-xs shadow-lg shadow-slate-900/10 hover:shadow-orange-500/20 transition flex items-center gap-2.5 group">
+        <i class="fa-solid fa-bag-shopping text-orange-400 group-hover:text-white transition"></i>
+        <span>My Order</span>
+        <span id="cart-badge" class="bg-orange-500 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full min-w-[20px] text-center">0</span>
+      </button>
 
     </div>
   </header>
@@ -64,7 +59,7 @@
           🔥 Freshly Made Daily
         </span>
         <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-3">
-          Craving Something <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">Delicious?</span>
+          Delicious Food, <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">Delivered Fast</span>
         </h1>
         <p class="text-slate-300 text-sm sm:text-base max-w-lg mb-6 leading-relaxed">
           Select your portion size, customize extra swallows, and check out securely in seconds!
@@ -130,7 +125,7 @@
           </div>
         </div>
 
-        <!-- Swallow Options (Only shown if category is Food) -->
+        <!-- Swallow Options -->
         <div id="swallow-section" class="border-t border-slate-100 pt-4 space-y-3">
           <div class="flex items-center justify-between">
             <label class="flex items-center gap-2 cursor-pointer">
@@ -217,25 +212,38 @@
   </div>
 
   <script>
-    // ⚠️ PASTE YOUR ACTUAL SUPABASE KEYS HERE
+    // ⬇️ REPLACE THIS WITH YOUR REAL SUPABASE ANON KEY ⬇️
     const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo
-"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo"; 
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabase = null;
+    if (SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY") {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
 
     let allMenuItems = [];
     let activeCategory = 'all';
     let cart = [];
 
-    // Modal State
     let selectedItem = null;
     let modalQty = 1;
 
-    // Fetch Menu Items from Supabase
     async function loadMenu() {
       const grid = document.getElementById('menu-grid');
       
+      // KEY CHECK FAILSAFE
+      if (!supabase) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-amber-50 border border-amber-200 text-amber-900 rounded-3xl p-6">
+            <i class="fa-solid fa-key text-3xl text-amber-500 mb-2"></i>
+            <p class="font-bold text-base">Supabase Key Required</p>
+            <p class="text-xs text-amber-700 mt-1 max-w-md mx-auto">
+              Please edit <strong>index.html</strong> and replace <code>YOUR_SUPABASE_ANON_KEY</code> on line 185 with your actual key from Supabase Dashboard!
+            </p>
+          </div>`;
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from('menu_items')
@@ -250,11 +258,8 @@
           grid.innerHTML = `
             <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-dashed border-slate-200 p-6">
               <i class="fa-solid fa-utensils text-4xl text-slate-300 mb-3"></i>
-              <h3 class="font-bold text-slate-800 text-base">No Menu Items Yet</h3>
-              <p class="text-slate-500 text-xs mt-1 mb-4">Go to the Admin portal to add food and drink items!</p>
-              <a href="./admin.html" class="inline-flex items-center gap-2 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl">
-                Open Admin Portal
-              </a>
+              <h3 class="font-bold text-slate-800 text-base">No Menu Items Found</h3>
+              <p class="text-slate-500 text-xs mt-1">Please add food and drinks using your admin portal.</p>
             </div>`;
           return;
         }
@@ -264,13 +269,12 @@
         grid.innerHTML = `
           <div class="col-span-full text-center py-12 bg-rose-50 border border-rose-200 text-rose-700 rounded-3xl p-6">
             <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
-            <p class="font-bold text-sm">Unable to connect to database</p>
+            <p class="font-bold text-sm">Database Error</p>
             <p class="text-xs mt-1 text-rose-600">${err.message}</p>
           </div>`;
       }
     }
 
-    // Render Menu Cards
     function renderMenu() {
       const grid = document.getElementById('menu-grid');
       const searchQuery = document.getElementById('search-input').value.toLowerCase();
@@ -328,7 +332,6 @@
       `).join('');
     }
 
-    // Modal Control & Swallow Options
     function openCustomizeModal(id) {
       selectedItem = allMenuItems.find(i => i.id === id);
       if (!selectedItem) return;
@@ -342,7 +345,6 @@
       document.getElementById('swallow-select-box').classList.add('hidden');
       document.getElementById('modal-note').value = '';
 
-      // Hide swallow option for drinks
       const swallowSec = document.getElementById('swallow-section');
       if (selectedItem.category === 'drink') swallowSec.classList.add('hidden');
       else swallowSec.classList.remove('hidden');
@@ -385,7 +387,7 @@
       const isSwallowChecked = document.getElementById('extra-swallow-check').checked;
       
       if (isSwallowChecked) {
-        pricePerPortion += 500; // Base swallow cost
+        pricePerPortion += 500;
         const swallowType = document.getElementById('swallow-type').value;
         if (swallowType.includes("Pounded Yam")) pricePerPortion += 300;
       }
@@ -416,7 +418,7 @@
       const itemTitle = `${selectedItem.name}${swallowInfo ? ` (+ ${swallowInfo})` : ''}${note ? ` [Note: ${note}]` : ''}`;
 
       cart.push({
-        id: Date.now(), // unique cart item ID
+        id: Date.now(),
         originalId: selectedItem.id,
         name: itemTitle,
         price: finalUnitPrice,
@@ -428,7 +430,6 @@
       toggleCart(true);
     }
 
-    // Filter Tabs
     function setCategory(cat) {
       activeCategory = cat;
       document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -438,7 +439,6 @@
       renderMenu();
     }
 
-    // Cart Drawer Controls
     function updateQuantity(cartId, change) {
       const index = cart.findIndex(c => c.id === cartId);
       if (index > -1) {
