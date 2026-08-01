@@ -3,149 +3,232 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manager Portal - Live Kitchen Dashboard</title>
+  <title>Kitchen Manager - Live Display System</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; background: #f1f5f9; color: #0f172a; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .live-indicator { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #16a34a; font-size: 0.9rem; }
-    .pulse { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 rgba(34, 197, 94, 0.4); animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
-    
-    .order-card { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem; border-left: 6px solid #94a3b8; }
-    .order-card.paid { border-left-color: #16a34a; }
-    .order-card.pending { border-left-color: #eab308; }
-    
-    .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; }
-    .order-ref { font-weight: 700; font-size: 1.1rem; }
-    .order-time { font-size: 0.85rem; color: #64748b; }
-    
-    .order-details { margin-bottom: 1rem; }
-    .item-list { background: #f8fafc; padding: 0.75rem 1rem; border-radius: 6px; margin: 0.5rem 0; font-size: 0.95rem; }
-    .item-row { display: flex; justify-content: space-between; padding: 0.25rem 0; }
-    
-    .status-badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-    .status-received { background: #e0f2fe; color: #0369a1; }
-    .status-preparing { background: #fef3c7; color: #b45309; }
-    .status-ready { background: #dcfce7; color: #15803d; }
-    .status-delivered { background: #f3f4f6; color: #4b5563; }
-    
-    .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
-    button { padding: 0.5rem 0.85rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: opacity 0.2s; }
-    button:hover { opacity: 0.85; }
-    .btn-prep { background: #f59e0b; color: white; }
-    .btn-ready { background: #10b981; color: white; }
-    .btn-deliver { background: #3b82f6; color: white; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .pulse-ring { animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
   </style>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-  <div class="header">
-    <h1>📋 Manager Kitchen Dashboard</h1>
-    <div class="live-indicator">
-      <div class="pulse"></div> Realtime Updates Active
+  <!-- TOP STATS & NAVIGATION BAR -->
+  <header class="bg-slate-800/90 border-b border-slate-700/80 sticky top-0 z-50 backdrop-blur-md px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-xl shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid fa-fire"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white flex items-center gap-2">
+            Kitchen Display System
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-ring"></span>
+          </h1>
+          <p class="text-xs text-slate-400">Live order queue & fulfillment board</p>
+        </div>
+      </div>
+
+      <!-- Live Quick Stats -->
+      <div class="flex items-center gap-6 bg-slate-900/60 px-5 py-2 rounded-xl border border-slate-700/60">
+        <div>
+          <p class="text-[10px] uppercase font-bold text-slate-400">Total Orders</p>
+          <p id="stat-total-orders" class="text-base font-bold text-white">0</p>
+        </div>
+        <div class="h-6 w-px bg-slate-700"></div>
+        <div>
+          <p class="text-[10px] uppercase font-bold text-slate-400">Pending</p>
+          <p id="stat-pending" class="text-base font-bold text-amber-400">0</p>
+        </div>
+        <div class="h-6 w-px bg-slate-700"></div>
+        <div>
+          <p class="text-[10px] uppercase font-bold text-slate-400">Revenue Today</p>
+          <p id="stat-revenue" class="text-base font-bold text-emerald-400">₦0</p>
+        </div>
+      </div>
+
+      <!-- Quick Link to Admin -->
+      <a href="./admin.html" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-lg font-semibold transition flex items-center gap-2">
+        <i class="fa-solid fa-gears"></i> Menu Admin
+      </a>
+
     </div>
-  </div>
+  </header>
 
-  <div id="orders-container">Loading incoming orders...</div>
+  <!-- KANBAN ORDERS BOARD -->
+  <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+
+      <!-- COLUMN 1: RECEIVED -->
+      <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/60 flex flex-col min-h-[70vh]">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/60">
+          <h2 class="font-bold text-sky-400 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-bell"></i> 1. Received
+          </h2>
+          <span id="count-received" class="text-xs bg-sky-950 text-sky-400 px-2.5 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-received" class="space-y-4 flex-1"></div>
+      </div>
+
+      <!-- COLUMN 2: PREPARING -->
+      <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/60 flex flex-col min-h-[70vh]">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/60">
+          <h2 class="font-bold text-amber-400 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-kitchen-set"></i> 2. Preparing
+          </h2>
+          <span id="count-preparing" class="text-xs bg-amber-950 text-amber-400 px-2.5 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-preparing" class="space-y-4 flex-1"></div>
+      </div>
+
+      <!-- COLUMN 3: READY FOR PICKUP/DELIVERY -->
+      <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/60 flex flex-col min-h-[70vh]">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/60">
+          <h2 class="font-bold text-emerald-400 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i> 3. Ready
+          </h2>
+          <span id="count-ready" class="text-xs bg-emerald-950 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-ready" class="space-y-4 flex-1"></div>
+      </div>
+
+      <!-- COLUMN 4: DELIVERED -->
+      <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/60 flex flex-col min-h-[70vh]">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/60">
+          <h2 class="font-bold text-slate-400 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-box-archive"></i> 4. Delivered
+          </h2>
+          <span id="count-delivered" class="text-xs bg-slate-900 text-slate-400 px-2.5 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-delivered" class="space-y-4 flex-1 opacity-75"></div>
+      </div>
+
+    </div>
+  </main>
 
   <script>
     const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo
-";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const container = document.getElementById('orders-container');
 
-    // 1. Fetch all orders from database
-    async function loadOrders() {
+    // Audio chime for new incoming orders
+    const alertAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
+    async function loadOrders(isRealtimeEvent = false) {
       const { data: orders, error } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        container.innerHTML = `<p style="color:red;">Error loading orders: ${error.message}</p>`;
-        return;
+      if (error) return console.error(error);
+
+      if (isRealtimeEvent) {
+        try { alertAudio.play(); } catch(e) {}
       }
 
-      if (!orders || orders.length === 0) {
-        container.innerHTML = `<p style="color: #64748b; font-size: 1.1rem;">No orders placed yet. New orders will appear here automatically!</p>`;
-        return;
-      }
+      // Reset columns
+      const cols = {
+        received: document.getElementById('col-received'),
+        preparing: document.getElementById('col-preparing'),
+        ready: document.getElementById('col-ready'),
+        delivered: document.getElementById('col-delivered')
+      };
+      
+      const counts = { received: 0, preparing: 0, ready: 0, delivered: 0 };
+      let totalRev = 0;
 
-      container.innerHTML = orders.map(order => {
-        let itemsHtml = 'No item details';
+      Object.values(cols).forEach(el => el.innerHTML = '');
+
+      orders.forEach(order => {
+        const status = order.order_status || 'received';
+        if (counts[status] !== undefined) counts[status]++;
+        
+        if (order.payment_status === 'paid') {
+          totalRev += Number(order.total_amount || 0);
+        }
+
+        // Parse JSON items safely
+        let itemsListHtml = '';
         try {
-          const parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-          if (Array.isArray(parsedItems)) {
-            itemsHtml = parsedItems.map(i => `
-              <div class="item-row">
-                <span><strong>${i.quantity || 1}x</strong> ${i.name || `Item #${i.id}`}</span>
+          const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+          if (Array.isArray(items)) {
+            itemsListHtml = items.map(i => `
+              <div class="flex justify-between items-center text-xs text-slate-300 py-1 border-b border-slate-700/40 last:border-0">
+                <span><strong class="text-white font-bold">${i.quantity || 1}x</strong> ${i.name || `Item #${i.id}`}</span>
               </div>
             `).join('');
           }
-        } catch (e) { console.error("Error parsing order items:", e); }
+        } catch(e) { itemsListHtml = '<span class="text-xs text-slate-500">Item details unavailable</span>'; }
 
-        const dateFormatted = new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timeAgo = new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        return `
-          <div class="order-card ${order.payment_status}">
-            <div class="order-header">
+        const cardHtml = `
+          <div class="bg-slate-800 border ${order.payment_status === 'paid' ? 'border-emerald-500/40' : 'border-amber-500/40'} p-4 rounded-xl shadow-md space-y-3 hover:border-slate-600 transition">
+            
+            <div class="flex justify-between items-start">
               <div>
-                <div class="order-ref">Order ${order.reference}</div>
-                <div class="order-time">Placed at ${dateFormatted} • Customer: ${order.customer_email}</div>
+                <div class="font-bold text-white text-sm">Ref: ${order.reference}</div>
+                <div class="text-[11px] text-slate-400">${timeAgo} • ${order.customer_email}</div>
               </div>
-              <div>
-                <span class="status-badge status-${order.order_status}">${order.order_status}</span>
+              <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded ${order.payment_status === 'paid' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800'}">
+                ${order.payment_status}
+              </span>
+            </div>
+
+            <div class="bg-slate-900/80 p-2.5 rounded-lg space-y-1">
+              ${itemsListHtml}
+            </div>
+
+            <div class="flex justify-between items-center text-xs font-semibold pt-1">
+              <span class="text-slate-300">Total: <strong class="text-white">₦${Number(order.total_amount).toLocaleString()}</strong></span>
+              
+              <!-- Action Buttons -->
+              <div class="flex gap-1">
+                ${status === 'received' ? `<button onclick="updateStatus('${order.id}', 'preparing')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 py-1 rounded-md text-[11px] font-bold">Start Prep</button>` : ''}
+                ${status === 'preparing' ? `<button onclick="updateStatus('${order.id}', 'ready')" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-2.5 py-1 rounded-md text-[11px] font-bold">Mark Ready</button>` : ''}
+                ${status === 'ready' ? `<button onclick="updateStatus('${order.id}', 'delivered')" class="bg-sky-500 hover:bg-sky-600 text-white px-2.5 py-1 rounded-md text-[11px] font-bold">Deliver</button>` : ''}
               </div>
             </div>
 
-            <div class="order-details">
-              <strong>Order Items:</strong>
-              <div class="item-list">${itemsHtml}</div>
-              <div style="margin-top: 0.5rem;">
-                <strong>Total Paid:</strong> ₦${Number(order.total_amount).toLocaleString()} 
-                <small>(${order.payment_status.toUpperCase()})</small>
-              </div>
-            </div>
-
-            <div class="btn-group">
-              <button class="btn-prep" onclick="updateStatus('${order.id}', 'preparing')">Mark Preparing</button>
-              <button class="btn-ready" onclick="updateStatus('${order.id}', 'ready')">Mark Ready</button>
-              <button class="btn-deliver" onclick="updateStatus('${order.id}', 'delivered')">Mark Delivered</button>
-            </div>
           </div>
         `;
-      }).join('');
+
+        if (cols[status]) cols[status].innerHTML += cardHtml;
+      });
+
+      // Update Header Stats & Counters
+      document.getElementById('stat-total-orders').innerText = orders.length;
+      document.getElementById('stat-pending').innerText = counts.received + counts.preparing;
+      document.getElementById('stat-revenue').innerText = `₦${totalRev.toLocaleString()}`;
+
+      document.getElementById('count-received').innerText = counts.received;
+      document.getElementById('count-preparing').innerText = counts.preparing;
+      document.getElementById('count-ready').innerText = counts.ready;
+      document.getElementById('count-delivered').innerText = counts.delivered;
     }
 
-    // 2. Update order progress status
-    async function updateStatus(orderId, status) {
-      const { error } = await supabase
-        .from('orders')
-        .update({ order_status: status })
-        .eq('id', orderId);
-
-      if (error) alert("Failed to update status: " + error.message);
+    async function updateStatus(id, newStatus) {
+      const { error } = await supabase.from('orders').update({ order_status: newStatus }).eq('id', id);
+      if (error) alert("Error: " + error.message);
       else loadOrders();
     }
 
-    // 3. Listen live for new incoming orders
+    // Subscribe to Live Realtime Database Updates
     supabase
-      .channel('schema-db-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'orders' },
-        (payload) => {
-          loadOrders();
-        }
-      )
+      .channel('public:orders')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        loadOrders(true);
+      })
       .subscribe();
 
-    // Initial load
     loadOrders();
   </script>
 </body>
