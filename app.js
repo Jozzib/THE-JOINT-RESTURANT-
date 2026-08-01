@@ -1,27 +1,16 @@
 const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo";
+const SUPABASE_ANON_KEY = "
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo";
 
 const database = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-const defaultMenu = [
-  {
-    id: 1,
-    name: "Jollof Rice & Chicken",
-    category: "Rice",
-    price: 4200,
-    description: "Smoky jollof rice served with grilled chicken and plantain.",
-    image:
-      "https://images.unsplash.com/photo-1601050690117-94f5f6fa8bd8?auto=format&fit=crop&w=700&q=80",
-  },
-];
-
-let menu = defaultMenu;
+let menu = [];
 let cart = JSON.parse(localStorage.getItem("joint-cart") || "[]");
 let currentCategory = "All";
-let categories = ["All", ...new Set(menu.map((item) => item.category))];
+let categories = ["All"];
 
 const money = (amount) =>
   new Intl.NumberFormat("en-NG", {
@@ -50,23 +39,25 @@ function renderMenu() {
       ? menu
       : menu.filter((item) => item.category === currentCategory);
 
-  grid.innerHTML = foods
-    .map(
-      (item) => `
-        <article class="food-card">
-          <img class="food-image" src="${item.image}" alt="${item.name}" loading="lazy" />
-          <span class="food-category">${item.category}</span>
-          <h3>${item.name}</h3>
-          <p>${item.description}</p>
-          <div class="card-bottom">
-            <span class="price">${money(item.price)}</span>
-            <button class="add-button" data-id="${item.id}"
-              aria-label="Add ${item.name} to order">+</button>
-          </div>
-        </article>
-      `
-    )
-    .join("");
+  grid.innerHTML = foods.length
+    ? foods
+        .map(
+          (item) => `
+            <article class="food-card">
+              <img class="food-image" src="${item.image}" alt="${item.name}" loading="lazy" />
+              <span class="food-category">${item.category}</span>
+              <h3>${item.name}</h3>
+              <p>${item.description}</p>
+              <div class="card-bottom">
+                <span class="price">${money(item.price)}</span>
+                <button class="add-button" data-id="${item.id}"
+                  aria-label="Add ${item.name} to order">+</button>
+              </div>
+            </article>
+          `
+        )
+        .join("")
+    : `<p>No food is available at the moment. Please check back soon.</p>`;
 }
 
 async function loadMenu() {
@@ -78,6 +69,7 @@ async function loadMenu() {
 
   if (error) {
     console.error("Could not load menu:", error.message);
+    grid.innerHTML = `<p>We could not load the menu. Please refresh the page.</p>`;
     return;
   }
 
@@ -185,13 +177,8 @@ document.querySelector("#cartItems").addEventListener("click", (event) => {
   const item = cart.find((cartItem) => cartItem.id === id);
   if (!item) return;
 
-  if (event.target.dataset.action === "increase") {
-    item.quantity += 1;
-  }
-
-  if (event.target.dataset.action === "decrease") {
-    item.quantity -= 1;
-  }
+  if (event.target.dataset.action === "increase") item.quantity += 1;
+  if (event.target.dataset.action === "decrease") item.quantity -= 1;
 
   if (event.target.dataset.action === "remove" || item.quantity < 1) {
     cart = cart.filter((cartItem) => cartItem.id !== id);
@@ -220,66 +207,94 @@ document.querySelector("#orderForm").addEventListener("submit", async (event) =>
   if (!cart.length) return;
 
   const button = event.target.querySelector("button[type='submit']");
+  const originalButtonText = button.innerHTML;
   button.disabled = true;
-  button.textContent = "Sending order...";
+  button.textContent = "Processing order...";
 
-  const form = new FormData(event.target);
-  const customer = Object.fromEntries(form);
-
-  const orderId =
-    window.crypto && window.crypto.randomUUID
-      ? window.crypto.randomUUID()
-      : `00000000-0000-4000-8000-${Date.now().toString().padStart(12, "0")}`;
-
-  const total = cart.reduce(
+  const customer = Object.fromEntries(new FormData(event.target));
+  const orderId = window.crypto.randomUUID();
+  let paymentReference = null;
+  let paymentStatus = "not_required";
+  let total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+  let paymentUrl = null;
 
   try {
+    if (customer.payment === "Pay Online") {
+      const paymentResponse = await fetch(
+        "/.netlify/functions/initialize-payment",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: customer.email,
+            items: cart.map((item) => ({
+              id: item.id,
+              quantity: item.quantity,
+            })),
+          }),
+        }
+      );
+
+      const paymentData = await paymentResponse.json();
+
+      if (!paymentResponse.ok) {
+        throw new Error(paymentData.error || "Could not start payment.");
+      }
+
+      paymentReference = paymentData.reference;
+      paymentStatus = "pending";
+      total = paymentData.total;
+      paymentUrl = paymentData.authorizationUrl;
+    }
+
     const { error: orderError } = await database.from("orders").insert({
       id: orderId,
       customer_name: customer.name,
       customer_phone: customer.phone,
+      customer_email: customer.email,
       delivery_address: customer.address,
       payment_method: customer.payment,
-      total: total,
+      payment_reference: paymentReference,
+      payment_status: paymentStatus,
+      total,
     });
 
     if (orderError) throw orderError;
 
-    const orderItems = cart.map((item) => ({
-      order_id: orderId,
-      item_name: item.name,
-      quantity: item.quantity,
-      unit_price: item.price,
-    }));
-
-    const { error: itemsError } = await database
-      .from("order_items")
-      .insert(orderItems);
+    const { error: itemsError } = await database.from("order_items").insert(
+      cart.map((item) => ({
+        order_id: orderId,
+        item_name: item.name,
+        quantity: item.quantity,
+        unit_price: item.price,
+      }))
+    );
 
     if (itemsError) throw itemsError;
-
-    document.querySelector("#checkoutModal").classList.remove("open");
-
-    document.querySelector("#successMessage").textContent =
-      `Your order has been received. You chose ${customer.payment}. ` +
-      `We will contact you shortly on ${customer.phone}.`;
-
-    document.querySelector("#successModal").classList.add("open");
 
     cart = [];
     renderCart();
     event.target.reset();
+
+    if (paymentUrl) {
+      window.location.href = paymentUrl;
+      return;
+    }
+
+    document.querySelector("#checkoutModal").classList.remove("open");
+    document.querySelector("#successMessage").textContent =
+      `Your order has been received. You chose Pay on Delivery. ` +
+      `We will contact you shortly on ${customer.phone}.`;
+    document.querySelector("#successModal").classList.add("open");
   } catch (error) {
-    alert(
-      "We could not send your order. Please check your internet connection and try again."
-    );
     console.error(error);
+    alert(error.message || "We could not send your order. Please try again.");
   } finally {
     button.disabled = false;
-    button.innerHTML = "Place my order <span>→</span>";
+    button.innerHTML = originalButtonText;
   }
 });
 
@@ -288,6 +303,15 @@ document.querySelector("#finishOrder").onclick = () => {
   document.querySelector("#menu").scrollIntoView();
 };
 
-renderMenu();
+const search = new URLSearchParams(window.location.search);
+
+if (search.get("payment") === "success") {
+  setTimeout(() => {
+    alert("Thank you. We are confirming your payment now.");
+  }, 500);
+
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
 renderCart();
 loadMenu();
