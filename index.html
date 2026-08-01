@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE JOINT RESTURANT | Order Food</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top">THE JOINT <span>RESTURANT</span></a>
+      <nav>
+        <a href="#menu">Menu</a>
+        <a href="#how-it-works">How it works</a>
+        <button class="cart-button" id="openCart" aria-label="Open order cart">Order <span id="cartCount">0</span></button>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">GOOD FOOD. GOOD MOOD.</p>
+          <h1>Your favourite meal,<br /><em>right at your door.</em></h1>
+          <p class="hero-text">Freshly prepared Nigerian favourites, ready for pickup or delivery. Order in a few taps.</p>
+          <a class="primary-button" href="#menu">Explore today’s menu <span>→</span></a>
+          <div class="trust-row"><span>★ 4.9 rating</span><span>•</span><span>Fast local delivery</span></div>
+        </div>
+        <div class="hero-image-wrap">
+          <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1100&q=85" alt="A colourful Nigerian meal" />
+          <div class="hero-note"><span>🍲</span><div><strong>Made with love</strong><small>Fresh every day</small></div></div>
+        </div>
+      </section>
+
+      <section class="menu-section" id="menu">
+        <div class="section-heading">
+          <div><p class="eyebrow">WHAT’S COOKING</p><h2>Today’s menu</h2></div>
+          <div class="filters" id="filters"></div>
+        </div>
+        <div class="food-grid" id="foodGrid"></div>
+      </section>
+
+      <section class="info-strip" id="how-it-works">
+        <div><span class="step">01</span><h3>Choose your meal</h3><p>Pick from the fresh dishes on today’s menu.</p></div>
+        <div><span class="step">02</span><h3>Place your order</h3><p>Add your delivery details and preferred payment.</p></div>
+        <div><span class="step">03</span><h3>Enjoy!</h3><p>We’ll prepare it fresh and bring it to you.</p></div>
+      </section>
+    </main>
+
+    <footer><a class="brand" href="#top">THE JOINT <span>RESTURANT</span></a><p>Fresh food, always.</p></footer>
+
+    <aside class="cart-panel" id="cartPanel" aria-label="Your order" aria-hidden="true">
+      <div class="cart-head"><div><p class="eyebrow">YOUR ORDER</p><h2>Your basket</h2></div><button class="close-button" id="closeCart" aria-label="Close order">×</button></div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="empty-cart" id="emptyCart">Your basket is empty.<br /><a href="#menu" id="browseMenu">Browse the menu</a></div>
+      <div class="cart-footer" id="cartFooter">
+        <div class="total-row"><span>Subtotal</span><strong id="cartTotal">₦0</strong></div>
+        <button class="primary-button checkout-button" id="checkout">Continue to checkout <span>→</span></button>
+      </div>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+
+    <section class="checkout-modal" id="checkoutModal" aria-hidden="true">
+      <div class="checkout-card">
+        <button class="close-button close-checkout" aria-label="Close checkout">×</button>
+        <p class="eyebrow">ALMOST THERE</p><h2>Delivery details</h2>
+        <form id="orderForm">
+          <label>Full name<input required name="name" placeholder="Your name" /></label>
+          <label>Phone number<input required name="phone" type="tel" placeholder="0800 000 0000" /></label>
+          <label>Delivery address<textarea required name="address" placeholder="Street, area and nearest landmark"></textarea></label>
+          <fieldset><legend>How would you like to pay?</legend><label class="payment-option"><input type="radio" name="payment" value="Pay Online" checked /><span><strong>Pay online</strong><small>Secure card or bank transfer payment</small></span></label><label class="payment-option"><input type="radio" name="payment" value="Pay on Delivery" /><span><strong>Pay on delivery</strong><small>Pay in cash or transfer when it arrives</small></span></label></fieldset>
+          <button class="primary-button submit-order" type="submit">Place my order <span>→</span></button>
+        </form>
+      </div>
+    </section>
+
+    <section class="success-modal" id="successModal" aria-hidden="true"><div class="success-card"><div class="success-icon">✓</div><p class="eyebrow">ORDER RECEIVED</p><h2>Thank you!</h2><p id="successMessage">We’ve received your order.</p><button class="primary-button" id="finishOrder">Back to menu</button></div></section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
