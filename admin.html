@@ -3,87 +3,176 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Portal - Menu & Inventory</title>
+  <title>Admin Dashboard - Menu & Inventory</title>
+  <!-- Tailwind CSS CDN for modern styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for sleek icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #f8fafc; color: #1e293b; }
-    h1, h2 { color: #0f172a; }
-    .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-    .form-group { margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
-    label { font-weight: 600; font-size: 0.9rem; }
-    input, select, button { padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; }
-    button { background: #2563eb; color: white; border: none; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    button:hover { background: #1d4ed8; }
-    button.btn-danger { background: #ef4444; }
-    button.btn-danger:hover { background: #dc2626; }
-    button.btn-secondary { background: #64748b; }
-    button.btn-secondary:hover { background: #475569; }
-    .item-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e2e8f0; gap: 1rem; }
-    .item-info { display: flex; align-items: center; gap: 1rem; }
-    .item-info img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; background: #e2e8f0; }
-    .badge { padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-    .badge-food { background: #dbeafe; color: #1e40af; }
-    .badge-drink { background: #fce7f3; color: #9d174d; }
-    .actions { display: flex; gap: 0.5rem; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
   </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-  <h1>👨‍🍳 Restaurant Admin Portal</h1>
-
-  <!-- ADD ITEM FORM -->
-  <div class="card">
-    <h2>Add New Item to Menu</h2>
-    <form id="add-item-form">
-      <div class="form-group">
-        <label for="name">Item Name</label>
-        <input type="text" id="name" placeholder="e.g. Jollof Rice & Chicken" required />
-      </div>
-
-      <div style="display: flex; gap: 1rem;">
-        <div class="form-group" style="flex: 1;">
-          <label for="price">Price (NGN)</label>
-          <input type="number" id="price" placeholder="2500" min="0" step="0.01" required />
+  <div class="flex flex-col md:flex-row min-h-screen">
+    
+    <!-- SIDEBAR / NAVIGATION -->
+    <aside class="w-full md:w-64 bg-slate-900 text-slate-300 p-6 flex flex-col justify-between shrink-0">
+      <div>
+        <div class="flex items-center gap-3 text-white font-bold text-xl mb-8">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
+            <i class="fa-solid fa-utensils"></i>
+          </div>
+          <span>Bistro Admin</span>
         </div>
-        <div class="form-group" style="flex: 1;">
-          <label for="category">Category</label>
-          <select id="category">
-            <option value="food">Food</option>
-            <option value="drink">Drink</option>
-          </select>
+
+        <nav class="space-y-2">
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-indigo-600 text-white font-medium">
+            <i class="fa-solid fa-book-open w-5"></i> Menu Items
+          </a>
+          <a href="./manager.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition">
+            <i class="fa-solid fa-bell-concierge w-5"></i> Kitchen Orders
+          </a>
+        </nav>
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 text-xs text-slate-500">
+        Status: <span class="text-emerald-400 font-semibold">● Online</span>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full">
+      
+      <!-- Top Header Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">Menu Management</h1>
+          <p class="text-slate-500 text-sm">Add, update, or remove items from your customer menu.</p>
         </div>
+        <button onclick="scrollToForm()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm transition flex items-center gap-2 self-start sm:self-auto">
+          <i class="fa-solid fa-plus"></i> Add New Item
+        </button>
       </div>
 
-      <div class="form-group">
-        <label for="image-file">Item Picture</label>
-        <input type="file" id="image-file" accept="image/*" required />
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- LEFT COLUMN: ADD ITEM FORM -->
+        <div class="lg:col-span-1" id="form-container">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 sticky top-6">
+            <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-circle-plus text-indigo-600"></i> Add Menu Item
+            </h2>
+
+            <form id="add-item-form" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Item Title</label>
+                <input type="text" id="name" placeholder="e.g. Seafood Fried Rice" required
+                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Price (₦)</label>
+                  <input type="number" id="price" placeholder="4500" min="0" step="0.01" required
+                         class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Category</label>
+                  <select id="category" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
+                    <option value="food">Food 🍲</option>
+                    <option value="drink">Drink 🍹</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- File Upload with Image Preview -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Item Image</label>
+                <div class="border-2 border-dashed border-slate-200 hover:border-indigo-400 transition rounded-xl p-4 text-center cursor-pointer relative bg-slate-50" id="drop-zone">
+                  <input type="file" id="image-file" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)" />
+                  <div id="preview-placeholder">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+                    <p class="text-xs text-slate-500 font-medium">Click or drag image to upload</p>
+                  </div>
+                  <img id="image-preview" class="hidden w-full h-36 object-cover rounded-lg mx-auto shadow-xs" alt="Preview" />
+                </div>
+              </div>
+
+              <button type="submit" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold shadow-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-upload"></i> Upload & Save Item
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: ITEM INVENTORY LIST -->
+        <div class="lg:col-span-2">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+            
+            <!-- Filters & Search Bar -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-between items-center mb-6">
+              <div class="relative w-full sm:w-64">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                <input type="text" id="search-input" onkeyup="filterItems()" placeholder="Search menu..." 
+                       class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+
+              <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="setFilter('all')" id="filter-all" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200">All</button>
+                <button onclick="setFilter('food')" id="filter-food" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Foods</button>
+                <button onclick="setFilter('drink')" id="filter-drink" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Drinks</button>
+              </div>
+            </div>
+
+            <!-- Items List Table/Cards -->
+            <div id="menu-list" class="space-y-3">
+              <div class="text-center py-12 text-slate-400">
+                <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                <p class="text-sm">Loading items...</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
+    </main>
 
-      <button type="submit" id="submit-btn">Upload & Add Item</button>
-    </form>
-  </div>
-
-  <!-- MENU LIST -->
-  <div class="card">
-    <h2>Current Menu Items</h2>
-    <div id="menu-list">Loading items...</div>
   </div>
 
   <script>
-    // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS
     const SUPABASE_URL = "https://vgznxqrcnofihvknkmfz.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnem54cXJjbm9maWh2a25rbWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NDAyODcsImV4cCI6MjEwMTExNjI4N30.xHB1roeWOuyH5L57C-hn-BDspr0X1I6HFsH_ulURWVo
-";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const form = document.getElementById('add-item-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const menuList = document.getElementById('menu-list');
+    let allItems = [];
+    let currentFilter = 'all';
 
-    // 1. Fetch & Render Menu Items
+    // Image Preview Helper
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('image-preview').src = e.target.result;
+          document.getElementById('image-preview').classList.remove('hidden');
+          document.getElementById('preview-placeholder').classList.add('hidden');
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Scroll to form on mobile
+    function scrollToForm() {
+      document.getElementById('form-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Fetch Items
     async function loadMenuItems() {
       const { data: items, error } = await supabase
         .from('menu_items')
@@ -91,44 +180,86 @@
         .order('id', { ascending: false });
 
       if (error) {
-        menuList.innerHTML = `<p style="color:red;">Error loading menu: ${error.message}</p>`;
+        document.getElementById('menu-list').innerHTML = `
+          <div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-sm">
+            Failed to load items: ${error.message}
+          </div>`;
         return;
       }
 
-      if (!items || items.length === 0) {
-        menuList.innerHTML = `<p>No items found. Add your first food or drink above!</p>`;
+      allItems = items || [];
+      renderItems();
+    }
+
+    // Render Filtered Items
+    function renderItems() {
+      const searchQuery = document.getElementById('search-input').value.toLowerCase();
+      const container = document.getElementById('menu-list');
+
+      const filtered = allItems.filter(item => {
+        const matchesCategory = currentFilter === 'all' || item.category === currentFilter;
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <i class="fa-solid fa-utensils text-2xl text-slate-300 mb-2"></i>
+            <p class="text-slate-500 text-sm font-medium">No menu items found</p>
+          </div>`;
         return;
       }
 
-      menuList.innerHTML = items.map(item => `
-        <div class="item-row">
-          <div class="item-info">
-            <img src="${item.image_url || 'https://via.placeholder.com/60'}" alt="${item.name}" />
-            <div>
-              <div style="font-weight: bold; font-size: 1.1rem;">${item.name}</div>
-              <div>₦${Number(item.price).toLocaleString()} 
-                <span class="badge badge-${item.category}">${item.category}</span>
+      container.innerHTML = filtered.map(item => `
+        <div class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl hover:border-slate-300 transition gap-4">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <img src="${item.image_url || 'https://via.placeholder.com/80'}" alt="${item.name}" 
+                 class="w-14 h-14 rounded-lg object-cover bg-slate-200 shrink-0" />
+            <div class="min-w-0">
+              <div class="font-bold text-slate-800 text-sm truncate">${item.name}</div>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-slate-900 font-semibold text-xs">₦${Number(item.price).toLocaleString()}</span>
+                <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md ${item.category === 'drink' ? 'bg-pink-100 text-pink-700' : 'bg-blue-100 text-blue-700'}">
+                  ${item.category}
+                </span>
               </div>
-              <small style="color: ${item.is_available ? 'green' : 'red'}; font-weight: 600;">
-                ${item.is_available ? '● Available' : '○ Unavailable'}
-              </small>
             </div>
           </div>
-          <div class="actions">
-            <button class="btn-secondary" onclick="toggleAvailability(${item.id}, ${!item.is_available})">
-              Mark ${item.is_available ? 'Unavailable' : 'Available'}
+
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="toggleAvailability(${item.id}, ${!item.is_available})" 
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${item.is_available ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}">
+              ${item.is_available ? '● Available' : '○ Unavailable'}
             </button>
-            <button class="btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+            <button onclick="deleteItem(${item.id})" class="p-2 text-slate-400 hover:text-rose-600 transition">
+              <i class="fa-solid fa-trash-can text-sm"></i>
+            </button>
           </div>
         </div>
       `).join('');
     }
 
-    // 2. Add New Item with Image Upload
-    form.addEventListener('submit', async (e) => {
+    // Filter Controls
+    function setFilter(type) {
+      currentFilter = type;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.className = "filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100";
+      });
+      document.getElementById(`filter-${type}`).className = "filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200";
+      renderItems();
+    }
+
+    function filterItems() {
+      renderItems();
+    }
+
+    // Form Submit Handler
+    document.getElementById('add-item-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = document.getElementById('submit-btn');
       submitBtn.disabled = true;
-      submitBtn.innerText = "Uploading...";
+      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading...`;
 
       try {
         const name = document.getElementById('name').value;
@@ -136,65 +267,58 @@
         const category = document.getElementById('category').value;
         const fileInput = document.getElementById('image-file');
 
-        if (!fileInput.files.length) throw new Error("Please select an image file.");
+        if (!fileInput.files.length) throw new Error("Select an image first.");
 
         const file = fileInput.files[0];
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}.${fileExt}`;
 
-        // A. Upload file to Supabase Storage ('menu-images' bucket)
-        const { data: storageData, error: uploadError } = await supabase.storage
+        // Upload to Supabase Storage
+        const { error: uploadError } = await supabase.storage
           .from('menu-images')
           .upload(fileName, file);
 
         if (uploadError) throw uploadError;
 
-        // B. Get the Public URL of uploaded image
+        // Get Public URL
         const { data: urlData } = supabase.storage
           .from('menu-images')
           .getPublicUrl(fileName);
 
-        const imageUrl = urlData.publicUrl;
-
-        // C. Insert new record into menu_items table
+        // Insert Record
         const { error: dbError } = await supabase
           .from('menu_items')
-          .insert([{ name, price, category, image_url: imageUrl, is_available: true }]);
+          .insert([{ name, price, category, image_url: urlData.publicUrl, is_available: true }]);
 
         if (dbError) throw dbError;
 
-        alert("New item added successfully!");
-        form.reset();
+        // Reset Form & Refresh
+        document.getElementById('add-item-form').reset();
+        document.getElementById('image-preview').classList.add('hidden');
+        document.getElementById('preview-placeholder').classList.remove('hidden');
         loadMenuItems();
       } catch (err) {
-        alert("Failed to add item: " + err.message);
+        alert("Upload Error: " + err.message);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerText = "Upload & Add Item";
+        submitBtn.innerHTML = `<i class="fa-solid fa-upload"></i> Upload & Save Item`;
       }
     });
 
-    // 3. Toggle Item Availability
-    async function toggleAvailability(id, currentStatus) {
-      const { error } = await supabase
-        .from('menu_items')
-        .update({ is_available: currentStatus })
-        .eq('id', id);
-
-      if (error) alert("Could not update status: " + error.message);
-      else loadMenuItems();
+    // Toggle Availability
+    async function toggleAvailability(id, newStatus) {
+      await supabase.from('menu_items').update({ is_available: newStatus }).eq('id', id);
+      loadMenuItems();
     }
 
-    // 4. Delete Item
+    // Delete Item
     async function deleteItem(id) {
       if (confirm("Are you sure you want to delete this menu item?")) {
-        const { error } = await supabase.from('menu_items').delete().eq('id', id);
-        if (error) alert("Could not delete item: " + error.message);
-        else loadMenuItems();
+        await supabase.from('menu_items').delete().eq('id', id);
+        loadMenuItems();
       }
     }
 
-    // Initialize
     loadMenuItems();
   </script>
 </body>
