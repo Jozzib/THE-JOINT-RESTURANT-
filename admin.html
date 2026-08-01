@@ -1,243 +1,200 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>THE JOINT RESTURANT | Manager</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal - Menu & Inventory</title>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #f8fafc; color: #1e293b; }
+    h1, h2 { color: #0f172a; }
+    .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    label { font-weight: 600; font-size: 0.9rem; }
+    input, select, button { padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; }
+    button { background: #2563eb; color: white; border: none; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #1d4ed8; }
+    button.btn-danger { background: #ef4444; }
+    button.btn-danger:hover { background: #dc2626; }
+    button.btn-secondary { background: #64748b; }
+    button.btn-secondary:hover { background: #475569; }
+    .item-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e2e8f0; gap: 1rem; }
+    .item-info { display: flex; align-items: center; gap: 1rem; }
+    .item-info img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; background: #e2e8f0; }
+    .badge { padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+    .badge-food { background: #dbeafe; color: #1e40af; }
+    .badge-drink { background: #fce7f3; color: #9d174d; }
+    .actions { display: flex; gap: 0.5rem; }
+  </style>
+</head>
+<body>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
-      rel="stylesheet"
-    />
+  <h1>👨‍🍳 Restaurant Admin Portal</h1>
 
-    <link rel="stylesheet" href="styles.css" />
+  <!-- ADD ITEM FORM -->
+  <div class="card">
+    <h2>Add New Item to Menu</h2>
+    <form id="add-item-form">
+      <div class="form-group">
+        <label for="name">Item Name</label>
+        <input type="text" id="name" placeholder="e.g. Jollof Rice & Chicken" required />
+      </div>
 
-    <style>
-      body {
-        background: #f7f3e9;
-      }
-
-      .admin {
-        max-width: 1120px;
-        margin: auto;
-        padding: 55px 30px;
-      }
-
-      .admin-top {
-        display: flex;
-        margin-bottom: 40px;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .admin h1 {
-        margin: 5px 0;
-        font-family: "Playfair Display", serif;
-        font-size: 48px;
-      }
-
-      .admin-grid {
-        display: grid;
-        grid-template-columns: 390px 1fr;
-        gap: 25px;
-      }
-
-      .admin-card {
-        padding: 27px;
-        border-radius: 8px;
-        background: white;
-      }
-
-      .admin-card h2 {
-        margin: 0 0 20px;
-        font-family: "Playfair Display", serif;
-        font-size: 27px;
-      }
-
-      .admin label {
-        display: block;
-        margin: 12px 0;
-        font-size: 13px;
-        font-weight: 700;
-      }
-
-      .admin input,
-      .admin select,
-      .admin textarea {
-        width: 100%;
-        margin-top: 6px;
-        padding: 11px;
-        border: 1px solid #e5dfd2;
-        border-radius: 4px;
-      }
-
-      .admin textarea {
-        height: 62px;
-        resize: vertical;
-      }
-
-      .save {
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      .manage-item,
-      .order {
-        padding: 14px 0;
-        border-bottom: 1px solid #e5dfd2;
-      }
-
-      .manage-item {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .manage-item h3,
-      .order h3 {
-        margin: 0 0 4px;
-        font-size: 15px;
-      }
-
-      .manage-item p,
-      .order p {
-        margin: 0;
-        color: #6d7269;
-        font-size: 12px;
-      }
-
-      .delete {
-        border: 0;
-        background: none;
-        color: #e85d2a;
-        font-size: 12px;
-        cursor: pointer;
-      }
-
-      .order-items {
-        margin: 8px 0 0;
-        padding-left: 17px;
-        font-size: 13px;
-        line-height: 1.6;
-      }
-
-      .badge {
-        padding: 4px 8px;
-        border-radius: 99px;
-        background: #e5f0e8;
-        color: #315340;
-        font-size: 10px;
-        font-weight: 700;
-      }
-
-      .empty-admin {
-        color: #6d7269;
-        font-size: 14px;
-      }
-
-      @media (max-width: 800px) {
-        .admin {
-          padding: 35px 20px;
-        }
-
-        .admin-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .admin-top {
-          flex-direction: column;
-          gap: 20px;
-          align-items: flex-start;
-        }
-
-        .admin h1 {
-          font-size: 38px;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <main class="admin">
-      <div class="admin-top">
-        <div>
-          <p class="eyebrow">THE JOINT RESTURANT</p>
-          <h1>Manager dashboard</h1>
-          <p style="margin: 0; color: #6d7269">
-            Update your menu and review orders.
-          </p>
+      <div style="display: flex; gap: 1rem;">
+        <div class="form-group" style="flex: 1;">
+          <label for="price">Price (NGN)</label>
+          <input type="number" id="price" placeholder="2500" min="0" step="0.01" required />
         </div>
-
-        <a class="primary-button" href="index.html">
-          View customer site <span>→</span>
-        </a>
+        <div class="form-group" style="flex: 1;">
+          <label for="category">Category</label>
+          <select id="category">
+            <option value="food">Food</option>
+            <option value="drink">Drink</option>
+          </select>
+        </div>
       </div>
 
-      <div class="admin-grid">
-        <section class="admin-card">
-          <h2>Add a menu item</h2>
+      <div class="form-group">
+        <label for="image-file">Item Picture</label>
+        <input type="file" id="image-file" accept="image/*" required />
+      </div>
 
-          <form id="menuForm">
-            <label>
-              Food name
-              <input
-                required
-                name="name"
-                placeholder="e.g. Jollof Rice & Chicken"
-              />
-            </label>
+      <button type="submit" id="submit-btn">Upload & Add Item</button>
+    </form>
+  </div>
 
-            <label>
-              Category
-              <input required name="category" placeholder="e.g. Rice" />
-            </label>
+  <!-- MENU LIST -->
+  <div class="card">
+    <h2>Current Menu Items</h2>
+    <div id="menu-list">Loading items...</div>
+  </div>
 
-            <label>
-              Price (₦)
-              <input
-                required
-                type="number"
-                min="0"
-                name="price"
-                placeholder="4200"
-              />
-            </label>
+  <script>
+    // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-            <label>
-              Description
-              <textarea
-                required
-                name="description"
-                placeholder="A short description of the meal"
-              ></textarea>
-            </label>
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            <label>
-              Image link (optional)
-              <input name="image" type="url" placeholder="https://..." />
-            </label>
+    const form = document.getElementById('add-item-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const menuList = document.getElementById('menu-list');
 
-            <button class="primary-button save" type="submit">
-              Add to menu <span>+</span>
+    // 1. Fetch & Render Menu Items
+    async function loadMenuItems() {
+      const { data: items, error } = await supabase
+        .from('menu_items')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        menuList.innerHTML = `<p style="color:red;">Error loading menu: ${error.message}</p>`;
+        return;
+      }
+
+      if (!items || items.length === 0) {
+        menuList.innerHTML = `<p>No items found. Add your first food or drink above!</p>`;
+        return;
+      }
+
+      menuList.innerHTML = items.map(item => `
+        <div class="item-row">
+          <div class="item-info">
+            <img src="${item.image_url || 'https://via.placeholder.com/60'}" alt="${item.name}" />
+            <div>
+              <div style="font-weight: bold; font-size: 1.1rem;">${item.name}</div>
+              <div>₦${Number(item.price).toLocaleString()} 
+                <span class="badge badge-${item.category}">${item.category}</span>
+              </div>
+              <small style="color: ${item.is_available ? 'green' : 'red'}; font-weight: 600;">
+                ${item.is_available ? '● Available' : '○ Unavailable'}
+              </small>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn-secondary" onclick="toggleAvailability(${item.id}, ${!item.is_available})">
+              Mark ${item.is_available ? 'Unavailable' : 'Available'}
             </button>
-          </form>
-        </section>
+            <button class="btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
 
-        <section class="admin-card">
-          <h2>Available food</h2>
-          <div id="menuList"></div>
-        </section>
+    // 2. Add New Item with Image Upload
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Uploading...";
 
-        <section class="admin-card" style="grid-column: 1 / -1">
-          <h2>Recent orders</h2>
-          <div id="ordersList"></div>
-        </section>
-      </div>
-    </main>
+      try {
+        const name = document.getElementById('name').value;
+        const price = parseFloat(document.getElementById('price').value);
+        const category = document.getElementById('category').value;
+        const fileInput = document.getElementById('image-file');
 
-    <script src="admin.js"></script>
-  </body>
+        if (!fileInput.files.length) throw new Error("Please select an image file.");
+
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+
+        // A. Upload file to Supabase Storage ('menu-images' bucket)
+        const { data: storageData, error: uploadError } = await supabase.storage
+          .from('menu-images')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        // B. Get the Public URL of uploaded image
+        const { data: urlData } = supabase.storage
+          .from('menu-images')
+          .getPublicUrl(fileName);
+
+        const imageUrl = urlData.publicUrl;
+
+        // C. Insert new record into menu_items table
+        const { error: dbError } = await supabase
+          .from('menu_items')
+          .insert([{ name, price, category, image_url: imageUrl, is_available: true }]);
+
+        if (dbError) throw dbError;
+
+        alert("New item added successfully!");
+        form.reset();
+        loadMenuItems();
+      } catch (err) {
+        alert("Failed to add item: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Upload & Add Item";
+      }
+    });
+
+    // 3. Toggle Item Availability
+    async function toggleAvailability(id, currentStatus) {
+      const { error } = await supabase
+        .from('menu_items')
+        .update({ is_available: currentStatus })
+        .eq('id', id);
+
+      if (error) alert("Could not update status: " + error.message);
+      else loadMenuItems();
+    }
+
+    // 4. Delete Item
+    async function deleteItem(id) {
+      if (confirm("Are you sure you want to delete this menu item?")) {
+        const { error } = await supabase.from('menu_items').delete().eq('id', id);
+        if (error) alert("Could not delete item: " + error.message);
+        else loadMenuItems();
+      }
+    }
+
+    // Initialize
+    loadMenuItems();
+  </script>
+</body>
 </html>
