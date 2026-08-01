@@ -32,12 +32,13 @@ exports.handler = async (event) => {
 
     const itemIds = items.map((item) => Number(item.id)).filter(Boolean);
 
-    // FIX: Removed &available=eq.true because the column does not exist in Supabase
-    if (!menuResponse.ok) {
-      const errorDetails = await menuResponse.text();
-      console.error("Supabase Error:", errorDetails);
-      throw new Error(`Supabase Error (${menuResponse.status}): ${errorDetails}`);
-    }
+    // Fetch prices from Supabase
+    const menuResponse = await fetch(
+      `${supabaseUrl}/rest/v1/menu_items?select=id,price&id=in.(${itemIds.join(",")})`,
+      {
+        headers: {
+          apikey: supabaseServiceKey,
+          Authorization: `Bearer ${supabaseServiceKey}`,
         },
       }
     );
@@ -45,7 +46,7 @@ exports.handler = async (event) => {
     if (!menuResponse.ok) {
       const errorDetails = await menuResponse.text();
       console.error("Supabase Error:", errorDetails);
-      throw new Error("Could not check the menu prices.");
+      throw new Error(`Supabase Error (${menuResponse.status}): ${errorDetails}`);
     }
 
     const menuItems = await menuResponse.json();
@@ -77,6 +78,7 @@ exports.handler = async (event) => {
     const websiteUrl =
       event.headers.origin || `https://${event.headers.host}`;
 
+    // Initialize transaction with Paystack
     const paystackResponse = await fetch(
       "https://api.paystack.co/transaction/initialize",
       {
@@ -98,8 +100,9 @@ exports.handler = async (event) => {
     const paystackResult = await paystackResponse.json();
 
     if (!paystackResponse.ok || !paystackResult.status) {
+      console.error("Paystack Error Result:", paystackResult);
       throw new Error(
-        paystackResult.message || "Could not start the payment."
+        `Paystack Error: ${paystackResult.message || "Could not start the payment."}`
       );
     }
 
@@ -113,7 +116,7 @@ exports.handler = async (event) => {
       }),
     };
   } catch (error) {
-    console.error(error);
+    console.error("Handler Error:", error);
 
     return {
       statusCode: 500,
